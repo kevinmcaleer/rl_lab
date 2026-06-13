@@ -36,7 +36,7 @@ RL_LAB    := $(VENV_BIN)/rl-lab
 # .PHONY declarations — these targets never produce a file of the same name
 # ---------------------------------------------------------------------------
 
-.PHONY: help install install-sim lint type test docs sim foxglove clean
+.PHONY: help install install-sim lint type test docs sim foxglove jog clean
 
 # ---------------------------------------------------------------------------
 # help  (default goal)
@@ -109,13 +109,14 @@ sim: $(VENV)/bin/activate  ## Launch the Buddy Jr hello-sim via the rl-lab CLI
 	$(RL_LAB) sim
 
 # ---------------------------------------------------------------------------
-# foxglove
+# foxglove / jog
 # ---------------------------------------------------------------------------
 
-# Note: scripts/launch_foxglove_bridge.py is an M2 deliverable (not yet landed).
-# Until it exists the CLI stub (rl-lab viz) is the runnable entry point.
-foxglove: $(VENV)/bin/activate  ## Launch the Foxglove bridge via the rl-lab CLI
-	$(RL_LAB) viz
+foxglove: $(VENV)/bin/activate  ## Launch the Foxglove bridge (ws://localhost:8765)
+	$(VENV_BIN)/python scripts/launch_foxglove_bridge.py
+
+jog: $(VENV)/bin/activate  ## Keyboard-jog Buddy Jr joints via pure FK + Foxglove
+	$(VENV_BIN)/python scripts/jog_joints.py
 
 # ---------------------------------------------------------------------------
 # clean
