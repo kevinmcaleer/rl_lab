@@ -149,171 +149,70 @@ def make_logging_callback(
 # --------------------------------------------------------------------------- #
 
 
-class SimpleCallbackBridge:
-    """Bridge between a plain ``Callable[[dict], None]`` and SB3's callback API.
+def SimpleCallbackBridge(
+    callback: Callable[[dict[str, Any]], None],
+    log_every: int = 1000,
+):
+    """Wrap a plain ``callback(metrics: dict)`` as a Stable-Baselines3 callback.
 
-    SB3 expects a ``stable_baselines3.common.callbacks.BaseCallback`` subclass.
-    This class inherits from ``BaseCallback`` (lazy-imported so the module
-    stays importable without SB3) and every ``log_every`` env steps it builds
-    a metrics dict from ``self.model.logger`` / ``self.locals`` and forwards
-    it to the user-supplied *callback*.
-
-    How SB3 calls BaseCallback
-    --------------------------
-    SB3 calls ``callback._on_step()`` after every env step.  It also calls
-    ``callback._on_rollout_end()`` at the end of each rollout (PPO) and
-    ``callback._on_training_end()`` once training finishes.  We only hook
-    ``_on_step()`` here; subclasses can override the others.
-
-    Metrics dict shape
-    ------------------
-    The dict we build on each log event looks like::
-
-        {
-            "step":           <num_timesteps>,
-            "episode_return": <mean ep reward from SB3's EP_REW_MEAN if available>,
-            "loss":           <actor/critic loss from SB3 logger if available>,
-            "success_rate":   <EP_SUCCESS_RATE from SB3 ep_info_buffer if available>,
-        }
-
-    Parameters
-    ----------
-    callback:
-        The plain callable to forward metrics to (e.g. the one returned by
-        :func:`make_logging_callback`).
-    log_every:
-        How many env steps between successive callback calls.  1 000 is a
-        reasonable default that keeps the CSV manageable while still giving
-        smooth TensorBoard curves.
+    Returns a ``BaseCallback`` instance that, every ``log_every`` env steps,
+    builds a metrics dict from SB3's ``ep_info_buffer`` / logger and forwards it
+    to ``callback``. Implemented as a factory so ``stable_baselines3`` is imported
+    lazily (this module stays importable without it).
     """
+    try:
+        from stable_baselines3.common.callbacks import BaseCallback
+    except ImportError as exc:  # pragma: no cover - exercised only without SB3
+        raise ImportError(
+            "stable-baselines3 is required to use SimpleCallbackBridge.  "
+            "Install it with: pip install stable-baselines3"
+        ) from exc
 
-    def __init__(
-        self,
-        callback: Callable[[dict[str, Any]], None],
-        log_every: int = 1000,
-    ) -> None:
-        # Lazy-import BaseCallback so the module is importable without SB3.
-        try:
-            from stable_baselines3.common.callbacks import BaseCallback  # type: ignore[import]
-        except ImportError as exc:
-            raise ImportError(
-                "stable-baselines3 is required to use SimpleCallbackBridge.  "
-                "Install it with: pip install stable-baselines3"
-            ) from exc
+    _user_callback = callback
+    _log_every = max(1, int(log_every))
 
-        # Dynamically create the class at construction time (rather than at
-        # class-definition time) so we can inherit from BaseCallback without
-        # forcing an SB3 import when the module is first loaded.
-        #
-        # We do this by creating an inner class and then *replacing* self with
-        # an instance of it.  Python allows __class__ reassignment for this
-        # pattern via __new__/__init__ but the cleanest teaching approach is
-        # to subclass dynamically.
-        #
-        # For simplicity in a teaching lab we use a slightly different pattern:
-        # store the user callback as an attribute and delegate from the SB3
-        # hook methods.  We build the true BaseCallback subclass here.
+    class _Bridge(BaseCallback):  # type: ignore[misc]
+        """SB3-compatible callback that delegates to the user callback."""
 
-        _user_callback = callback
-        _log_every = max(1, int(log_every))
+        def __init__(self, verbose: int = 0) -> None:
+            super().__init__(verbose=verbose)
+            self._user_callback = _user_callback
+            self._log_every = _log_every
 
-        class _Bridge(BaseCallback):  # type: ignore[misc]
-            """Inner SB3-compatible callback; delegates to the user callback."""
+        def _build_metrics(self) -> dict[str, Any]:
+            metrics: dict[str, Any] = {"step": self.num_timesteps}
+            ep_buf = getattr(self.model, "ep_info_buffer", None)
+            if ep_buf and len(ep_buf) > 0:
+                returns = [float(ep["r"]) for ep in ep_buf if "r" in ep]
+                if returns:
+                    metrics["episode_return"] = sum(returns) / len(returns)
+                successes = [float(ep["is_success"]) for ep in ep_buf if "is_success" in ep]
+                if successes:
+                    metrics["success_rate"] = sum(successes) / len(successes)
+                    metrics["is_success"] = successes[-1]
+            try:
+                sb3_log_vals = getattr(self.model.logger, "name_to_value", {})
+                for sb3_key in (
+                    "train/loss",
+                    "train/actor_loss",
+                    "train/critic_loss",
+                    "train/value_loss",
+                ):
+                    if sb3_key in sb3_log_vals:
+                        metrics[sb3_key.split("/", 1)[-1]] = float(sb3_log_vals[sb3_key])
+            except Exception:  # pragma: no cover - defensive; SB3 API may vary
+                pass
+            return metrics
 
-            def __init__(self, verbose: int = 0) -> None:
-                super().__init__(verbose=verbose)
-                self._user_callback = _user_callback
-                self._log_every = _log_every
+        def _on_step(self) -> bool:
+            if self.num_timesteps % self._log_every == 0:
+                self._user_callback(self._build_metrics())
+            return True
 
-            def _on_step(self) -> bool:
-                """Called by SB3 after every env step.
+        def _on_training_end(self) -> None:
+            self._user_callback(self._build_metrics())
 
-                Returns True to continue training (False would stop early).
-                """
-                # Only log every _log_every steps to keep overhead low.
-                if self.num_timesteps % self._log_every != 0:
-                    return True
-
-                # ---------------------------------------------------------- #
-                # Build the metrics dict from whatever SB3 makes available.   #
-                #                                                              #
-                # SB3 stores rolling episode stats in ep_info_buffer (a deque #
-                # of dicts with keys 'r' (return), 'l' (length), 't' (time)). #
-                # ---------------------------------------------------------- #
-                metrics: dict[str, Any] = {"step": self.num_timesteps}
-
-                # Episode return: mean of the last few completed episodes.
-                ep_buf = getattr(self.model, "ep_info_buffer", None)
-                if ep_buf and len(ep_buf) > 0:
-                    returns = [float(ep["r"]) for ep in ep_buf if "r" in ep]
-                    if returns:
-                        metrics["episode_return"] = sum(returns) / len(returns)
-
-                # Success rate: SB3 stores is_success in ep_info_buffer too
-                # when the env returns it in the info dict (HerReplayBuffer
-                # and GoalEnv setups).
-                if ep_buf and len(ep_buf) > 0:
-                    successes = [float(ep["is_success"]) for ep in ep_buf if "is_success" in ep]
-                    if successes:
-                        metrics["success_rate"] = sum(successes) / len(successes)
-                        # Also expose raw flag for the downstream callback's
-                        # rolling-window tracker.
-                        metrics["is_success"] = successes[-1]
-
-                # Loss values: SB3 exposes them via model.logger.
-                # The SB3 logger's name_to_value dict holds the most recently
-                # dumped scalars (dumped at each gradient step).
-                try:
-                    sb3_log_vals = getattr(self.model.logger, "name_to_value", {})
-                    # Common SB3 keys: train/loss, train/actor_loss,
-                    # train/critic_loss, train/value_loss.
-                    for sb3_key in (
-                        "train/loss",
-                        "train/actor_loss",
-                        "train/critic_loss",
-                        "train/value_loss",
-                    ):
-                        if sb3_key in sb3_log_vals:
-                            # Strip the "train/" prefix for a cleaner log key.
-                            short_key = sb3_key.split("/", 1)[-1]
-                            metrics[short_key] = float(sb3_log_vals[sb3_key])
-                except Exception:  # pragma: no cover — defensive; SB3 API may vary
-                    pass
-
-                self._user_callback(metrics)
-                return True  # True = keep training
-
-            def _on_training_end(self) -> None:
-                """Called once training finishes; emit a final log entry."""
-                # Emit whatever SB3 has buffered so the last episode is recorded.
-                # Reuse _on_step logic by faking the modulus condition.
-                orig_ts = self.num_timesteps
-                self.num_timesteps = 0  # force modulus == 0 check to pass
-                # Temporarily set to 0 so the modulus check passes.
-                # (num_timesteps % 0 would error, so we use a flag instead.)
-                self.num_timesteps = orig_ts
-                # Build and forward the final metrics dict.
-                metrics: dict[str, Any] = {"step": orig_ts}
-                ep_buf = getattr(self.model, "ep_info_buffer", None)
-                if ep_buf and len(ep_buf) > 0:
-                    returns = [float(ep["r"]) for ep in ep_buf if "r" in ep]
-                    if returns:
-                        metrics["episode_return"] = sum(returns) / len(returns)
-                self._user_callback(metrics)
-
-        # Store the inner class as our "instance" by changing __class__.
-        # This is the standard trick for making a factory function that
-        # returns an instance of a dynamically-defined subclass.
-        #
-        # Because __init__ must return None we can't do `return _Bridge()`,
-        # so we mutate self to look and behave exactly like a _Bridge.
-        #
-        # Simpler approach for a teaching codebase: just make SimpleCallbackBridge
-        # a factory *function* that returns a BaseCallback instance.  But the
-        # spec says "class SimpleCallbackBridge(BaseCallback)" so we honour that
-        # by using __class__ reassignment.
-        self.__class__ = _Bridge  # type: ignore[assignment]
-        _Bridge.__init__(self)  # type: ignore[arg-type]
+    return _Bridge()
 
 
 # --------------------------------------------------------------------------- #
@@ -322,100 +221,62 @@ class SimpleCallbackBridge:
 # --------------------------------------------------------------------------- #
 
 
-class FoxgloveCallback:
-    """SB3 callback that streams robot state + metrics to Foxglove during SB3 runs.
+def FoxgloveCallback(streamer: FoxgloveStreamer, publish_every: int = 500):
+    """SB3 callback that streams scalar metrics to Foxglove during SB3 runs.
 
-    This is intentionally a *thin stub*: in SB3 runs the env may or may not be
-    wrapped, and extracting joint angles from an SB3 VecEnv is cumbersome.
-    The callback therefore publishes only the *scalar* metrics (distance, reward,
-    episode_return, success_rate) that it can read from SB3's ep_info_buffer,
-    skipping the full 3-D robot-pose publishing (which requires joint_q and
-    ee_pos — available only from the unwrapped env).
-
-    For full 3-D streaming, set ``render_mode="foxglove"`` directly on the
-    environment instead of using this callback.
-
-    Parameters
-    ----------
-    streamer:
-        A :class:`~rl_lab.viz.foxglove_bridge.FoxgloveStreamer` instance
-        (already constructed by the caller so *this* callback does not own
-        its lifetime).
-    publish_every:
-        How many env steps between streamer.publish() calls.  Defaults to
-        500 (roughly 30 fps at 15 000 steps/second on a laptop).
+    A thin helper: in SB3 runs joint_q/ee_pos are not readily available, so this
+    publishes only the scalar metrics it can read from ``ep_info_buffer``. For
+    full 3-D streaming, set ``render_mode="foxglove"`` on the environment instead.
+    Returns a ``BaseCallback`` instance (SB3 imported lazily).
     """
+    try:
+        from stable_baselines3.common.callbacks import BaseCallback
+    except ImportError as exc:  # pragma: no cover - exercised only without SB3
+        raise ImportError(
+            "stable-baselines3 is required to use FoxgloveCallback.  "
+            "Install it with: pip install stable-baselines3"
+        ) from exc
 
-    def __init__(
-        self,
-        streamer: FoxgloveStreamer,
-        publish_every: int = 500,
-    ) -> None:
-        # Lazy SB3 import.
-        try:
-            from stable_baselines3.common.callbacks import BaseCallback  # type: ignore[import]
-        except ImportError as exc:
-            raise ImportError(
-                "stable-baselines3 is required to use FoxgloveCallback.  "
-                "Install it with: pip install stable-baselines3"
-            ) from exc
+    import numpy as np
 
-        import numpy as np
+    _streamer = streamer
+    _publish_every = max(1, int(publish_every))
 
-        _streamer = streamer
-        _publish_every = max(1, int(publish_every))
-        _np = np
+    class _FG(BaseCallback):  # type: ignore[misc]
+        """SB3 callback that publishes scalar metrics to Foxglove."""
 
-        class _FG(BaseCallback):  # type: ignore[misc]
-            """Inner SB3 callback that publishes metrics to Foxglove."""
+        def __init__(self, verbose: int = 0) -> None:
+            super().__init__(verbose=verbose)
+            self._streamer = _streamer
+            self._publish_every = _publish_every
 
-            def __init__(self, verbose: int = 0) -> None:
-                super().__init__(verbose=verbose)
-                self._streamer = _streamer
-                self._publish_every = _publish_every
-
-            def _on_step(self) -> bool:
-                if not self._streamer.enabled:
-                    return True
-                if self.num_timesteps % self._publish_every != 0:
-                    return True
-
-                # Pull whatever scalar we can from the ep_info_buffer.
-                ep_buf = getattr(self.model, "ep_info_buffer", None)
-                episode_return = 0.0
-                success_rate = 0.0
-                if ep_buf and len(ep_buf) > 0:
-                    returns = [float(ep["r"]) for ep in ep_buf if "r" in ep]
-                    if returns:
-                        episode_return = sum(returns) / len(returns)
-                    successes = [float(ep["is_success"]) for ep in ep_buf if "is_success" in ep]
-                    if successes:
-                        success_rate = sum(successes) / len(successes)
-
-                # We do not have joint_q / ee_pos / target here, so we publish
-                # zeros for the geometry and rely on the caller to use a
-                # render_mode="foxglove" env for full 3-D streaming.
-                _zero3 = _np.zeros(3, dtype=_np.float64)
-                _zero4 = _np.zeros(4, dtype=_np.float64)
-                self._streamer.publish(
-                    joint_q=_zero4,
-                    p_ee=_zero3,
-                    g=_zero3,
-                    dist=0.0,
-                    reward=0.0,
-                    episode_return=episode_return,
-                    success_rate=success_rate,
-                )
+        def _on_step(self) -> bool:
+            if not self._streamer.enabled:
                 return True
+            if self.num_timesteps % self._publish_every != 0:
+                return True
+            ep_buf = getattr(self.model, "ep_info_buffer", None)
+            episode_return = 0.0
+            success_rate = 0.0
+            if ep_buf and len(ep_buf) > 0:
+                returns = [float(ep["r"]) for ep in ep_buf if "r" in ep]
+                if returns:
+                    episode_return = sum(returns) / len(returns)
+                successes = [float(ep["is_success"]) for ep in ep_buf if "is_success" in ep]
+                if successes:
+                    success_rate = sum(successes) / len(successes)
+            self._streamer.publish(
+                joint_q=np.zeros(4, dtype=np.float64),
+                p_ee=np.zeros(3, dtype=np.float64),
+                g=np.zeros(3, dtype=np.float64),
+                dist=0.0,
+                reward=0.0,
+                episode_return=episode_return,
+                success_rate=success_rate,
+            )
+            return True
 
-            def _on_training_end(self) -> None:
-                """Called once by SB3 when training finishes."""
-                # No cleanup needed — the caller owns the streamer lifetime.
-                pass
-
-        # Same __class__ reassignment pattern as SimpleCallbackBridge.
-        self.__class__ = _FG  # type: ignore[assignment]
-        _FG.__init__(self)  # type: ignore[arg-type]
+    return _FG()
 
 
 # --------------------------------------------------------------------------- #
