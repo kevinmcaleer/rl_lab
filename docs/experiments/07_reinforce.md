@@ -313,3 +313,8 @@ Now you understand:
 
 These concepts are the foundation under PPO (Experiment 08), and they reappear
 in every actor-critic method you will ever use.
+
+---
+
+<!-- nav-footer -->
+← Previous: [Generalisation](06_generalisation.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [PPO](08_ppo.md) →

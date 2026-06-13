@@ -222,3 +222,8 @@ Now you understand:
 - **Reward design trade-off** — increasing `control_weight` makes the arm
   gentler but also makes the task harder to solve; finding the right balance
   is a core skill in applied RL.
+
+---
+
+<!-- nav-footer -->
+← Previous: [PPO](08_ppo.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [SAC + aim](10_sac_aim.md) →

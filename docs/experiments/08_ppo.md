@@ -312,3 +312,8 @@ baseline for robotics RL.**
   servos need, adding a smoothness penalty so the arm doesn't buzz.
 - **Experiment 10 — SAC** shows the off-policy alternative: far more
   sample-efficient than PPO but restricted to continuous actions.
+
+---
+
+<!-- nav-footer -->
+← Previous: [REINFORCE](07_reinforce.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Continuous PPO](09_ppo_continuous.md) →

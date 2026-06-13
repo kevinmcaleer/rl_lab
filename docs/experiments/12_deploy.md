@@ -385,3 +385,8 @@ the SD card and leave the arm in an unknown position.
 4. **Time the loop.** On the Pi, add `time.time()` calls around
    `policy.predict()` to confirm inference is well under 50 ms (the 20 Hz
    budget). NumPy MLP forward passes for a 17→256→256→4 net take < 0.1 ms.
+
+---
+
+<!-- nav-footer -->
+← Previous: [Sim-to-real gap](11_robustify.md) &nbsp;|&nbsp; [All experiments](../experiments.md)

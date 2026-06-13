@@ -1,7 +1,7 @@
 # Experiment 11 — Closing the sim-to-real gap
 
 > Part VI — Sim-to-real: deploy toward the real Buddy Jr
-> Script: [`experiments/11_robustify.py`](../../experiments/11_robustify.py)
+> Script: [`experiments/11_robustify.py`](https://github.com/kevinmcaleer/rl_lab/blob/main/experiments/11_robustify.py)
 
 A policy that is *perfect* in a pristine simulator routinely **fails on real
 hardware**. This experiment shows you why — and hands you the standard toolkit
@@ -41,7 +41,7 @@ After this experiment you should be able to:
 ## The toolkit: every knob maps to a real defect
 
 The experiment wraps the continuous reach env in
-[`DomainRandomization`](../../rl_lab/env/wrappers.py). Each knob models exactly
+[`DomainRandomization`](https://github.com/kevinmcaleer/rl_lab/blob/main/rl_lab/env/wrappers.py). Each knob models exactly
 one thing that goes wrong on the real arm:
 
 | `DomainRandomization` knob | Real-hardware analogue | Why it bites |
@@ -57,7 +57,7 @@ places:
 1. The env clips every action to `[-1, 1]` and every joint target to
    `JOINT_LIMITS` (±90°), so the policy can never command an impossible pose.
 2. On hardware,
-   [`radians_to_servo_degrees`](../../rl_lab/robot/buddy_jr.py) further clamps
+   [`radians_to_servo_degrees`](https://github.com/kevinmcaleer/rl_lab/blob/main/rl_lab/robot/buddy_jr.py) further clamps
    to the SG90's physical `[0, 180]°` range (`servo_deg = degrees(θ) + 90`).
 
 Clamping is not optional cosmetics: it is what stops a confused policy from
@@ -181,3 +181,8 @@ clamping — for crossing it.** That toolkit is exactly what makes Experiment 12
 - **Leads to:** Experiment 12 — export the robustified policy and run it on the
   real Raspberry Pi + PCA9685 hardware, watching the real arm and the sim in
   the same Foxglove layout.
+
+---
+
+<!-- nav-footer -->
+← Previous: [SAC + aim](10_sac_aim.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Deploy](12_deploy.md) →

@@ -324,3 +324,8 @@ your first concrete sim-to-real tool.**
   hardening pass: servo noise, control latency, link-length perturbations, and
   safety clamping — everything needed to give a trained policy a realistic chance
   on the real Buddy Jr arm.
+
+---
+
+<!-- nav-footer -->
+← Previous: [DQN](05_dqn.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [REINFORCE](07_reinforce.md) →

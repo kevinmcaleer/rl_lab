@@ -2,7 +2,7 @@
 
 > **Part V — Continuous control (the real arm's action space)**
 >
-> Script: [`experiments/10_sac_aim.py`](../../experiments/10_sac_aim.py)
+> Script: [`experiments/10_sac_aim.py`](https://github.com/kevinmcaleer/rl_lab/blob/main/experiments/10_sac_aim.py)
 > Env: `BuddyJrCameraPoint-v0` · Algorithms: **SAC** vs. **PPO**
 
 This is the experiment where Buddy Jr finally does its *real* job: not just put
@@ -245,3 +245,8 @@ most robust of the three out of the box.
 robots.** Next, in [Experiment 11](11_robustify.md), you harden this aim policy
 against the messiness of real SG90 servos — noise, latency, and safety limits —
 before it ever touches hardware.
+
+---
+
+<!-- nav-footer -->
+← Previous: [Continuous PPO](09_ppo_continuous.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Sim-to-real gap](11_robustify.md) →

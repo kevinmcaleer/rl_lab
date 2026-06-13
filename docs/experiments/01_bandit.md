@@ -271,3 +271,8 @@ becomes.
 - Upper Confidence Bound (UCB) — a provably optimal bandit algorithm that
   uses optimism formally: Auer et al. (2002), *Finite-Time Analysis of the
   Multiarmed Bandit Problem*, Machine Learning 47(2-3).
+
+---
+
+<!-- nav-footer -->
+[All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Build the world](02_world.md) →

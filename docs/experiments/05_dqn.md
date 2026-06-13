@@ -261,3 +261,8 @@ experiments by editing `experiments/05_dqn.py`:
 | `rl_lab/env/wrappers.py` | `DiscretizeBuddyJr` — how 9 discrete actions map to joint jogs |
 | `rl_lab/viz/foxglove_bridge.py` | `FoxgloveStreamer.publish(...)` — live 3D streaming |
 | `experiments/05_dqn.py` | `_train_condition()`, `run()`, `main()` |
+
+---
+
+<!-- nav-footer -->
+← Previous: [Reward shaping](04_reward_shaping.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Generalisation](06_generalisation.md) →

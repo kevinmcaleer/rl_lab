@@ -276,3 +276,8 @@ Experiment 05 (DQN) addresses all three at once.
   catalogue of real reward-hacking failures.
 - Silver et al. (2021), *Reward is Enough* — the argument that reward shaping is
   optional if you have the right objective.
+
+---
+
+<!-- nav-footer -->
+← Previous: [Tabular Q-learning](03_qlearning.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [DQN](05_dqn.md) →

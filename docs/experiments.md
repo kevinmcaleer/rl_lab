@@ -1,22 +1,23 @@
-# Experiments
+# The experiment ladder
 
-The full, runnable curriculum lives in [`experiments/README.md`](../experiments/README.md).
+Twelve progressive experiments, each runnable (`python experiments/NN_name.py`)
+and each teaching one new idea. Work through them in order — every experiment
+builds on the previous one.
 
-## Difficulty presets
+| # | Experiment | You learn |
+|---|------------|-----------|
+| 1 | [Bandit base](experiments/01_bandit.md) | reward, action, explore vs. exploit, epsilon |
+| 2 | [Build the world](experiments/02_world.md) | the environment as a first-class object; URDF + viewer |
+| 3 | [Tabular Q-learning](experiments/03_qlearning.md) | the MDP, Q-tables, the Bellman update, gamma |
+| 4 | [Reward shaping & the discretisation wall](experiments/04_reward_shaping.md) | reward design, reward hacking, the curse of dimensionality |
+| 5 | [DQN](experiments/05_dqn.md) | function approximation, replay buffer, target networks |
+| 6 | [Generalisation & domain randomisation](experiments/06_generalisation.md) | memorisation vs. generalisation; the first sim-to-real bridge |
+| 7 | [REINFORCE from scratch](experiments/07_reinforce.md) | policy gradients, the log-prob trick, value baselines |
+| 8 | [PPO](experiments/08_ppo.md) | actor-critic, GAE, the clipped surrogate objective |
+| 9 | [Continuous PPO](experiments/09_ppo_continuous.md) | continuous actions, action scaling, smoothness penalties |
+| 10 | [SAC + the full aim task](experiments/10_sac_aim.md) | off-policy continuous control, entropy, sample efficiency |
+| 11 | [Closing the sim-to-real gap](experiments/11_robustify.md) | domain randomisation, noise, latency, safety clamps |
+| 12 | [Deploy to real hardware](experiments/12_deploy.md) | inference-only export driving real SG90 servos |
 
-The reach environment ships three difficulty presets in `rl_lab/config/env/`,
-varying the target distribution, success tolerance, episode length and reward
-mode:
-
-| Preset | Reward | Tolerance | Max steps | Target shell |
-|--------|--------|-----------|-----------|--------------|
-| `easy`   | dense  | 3 cm  | 150 | 0.06–0.10 m |
-| `medium` | dense  | 2 cm  | 200 | 0.04–0.13 m |
-| `hard`   | sparse | 1.5 cm| 300 | 0.04–0.155 m |
-
-Load one in code (or, later, via the training CLI):
-
-```python
-from rl_lab.env.presets import make_env_from_preset
-env = make_env_from_preset("easy")
-```
+Each experiment script takes `--quick` (a fast smoke run) and `--render foxglove`
+(live 3D streaming). New to the ideas? Start with the [concept primers](concepts/mdps.md).

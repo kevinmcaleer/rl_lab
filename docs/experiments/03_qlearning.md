@@ -285,3 +285,8 @@ After completing this experiment you can answer:
   distribution.  Contrast on-policy vs off-policy convergence.
 * **Experiment 05 — DQN**: Replace the Q-table with a neural network —
   generalises to the full 17-D observation without binning.
+
+---
+
+<!-- nav-footer -->
+← Previous: [Build the world](02_world.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Reward shaping](04_reward_shaping.md) →

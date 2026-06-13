@@ -229,3 +229,8 @@ single line of RL.**
   a discretised version of this same environment.  Because you've seen the raw
   environment here, you'll be able to interpret the Q-table values in terms of
   real joint angles and distances.
+
+---
+
+<!-- nav-footer -->
+← Previous: [Bandit base](01_bandit.md) &nbsp;|&nbsp; [All experiments](../experiments.md) &nbsp;|&nbsp; Next: [Tabular Q-learning](03_qlearning.md) →
