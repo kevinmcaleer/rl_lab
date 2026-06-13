@@ -1,5 +1,7 @@
 # Buddy Jr RL Lab
 
+[![CI](https://github.com/kevinmcaleer/rl_lab/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinmcaleer/rl_lab/actions/workflows/ci.yml)
+
 A **reinforcement-learning simulation and learning lab** built around the
 [Buddy Jr](https://www.kevsrobots.com/blog/buddy_jr.html) 4-DOF robot arm.
 
@@ -112,6 +114,13 @@ rl_lab/
   docs/            MkDocs site (concepts, robot, experiments, getting started)
   tests/           URDF load, env API, kinematics, rewards, algo smoke tests
 ```
+
+
+## Documentation
+
+- [Architecture overview](docs/architecture.md) — the layered design and data flow
+- [Project plan & roadmap](docs/PLAN.md)
+- [Experiment curriculum](experiments/README.md)
 
 ## Credits & license
 
