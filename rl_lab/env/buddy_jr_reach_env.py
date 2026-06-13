@@ -100,7 +100,7 @@ class BuddyJrReachEnv(gym.Env):
         self.observation_space = S.make_observation_space(include_velocity, goal_env)
         self.action_space = S.make_action_space(discrete=False)
 
-        self._target = np.zeros(3, dtype=np.float64)
+        self._target: np.ndarray = np.zeros(3, dtype=np.float64)
         self._prev_distance = 0.0
         self._steps = 0
         self._episode = -1

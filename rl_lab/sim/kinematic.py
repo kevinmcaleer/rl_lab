@@ -36,10 +36,10 @@ class KinematicBackend(SimBackend):
     def __init__(self, ctrl_dt: float = 1.0 / 60.0, max_joint_velocity: float = MAX_JOINT_VELOCITY):
         self.ctrl_dt = float(ctrl_dt)
         self._max_step = float(max_joint_velocity) * self.ctrl_dt
-        self._q = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
-        self._qd = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
-        self._targets = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
-        self._target_pos = np.zeros(3, dtype=np.float64)
+        self._q: np.ndarray = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
+        self._qd: np.ndarray = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
+        self._targets: np.ndarray = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
+        self._target_pos: np.ndarray = np.zeros(3, dtype=np.float64)
 
     def reset(self, initial_q: np.ndarray | None = None) -> None:
         q = np.zeros(bj.NUM_JOINTS) if initial_q is None else bj.clamp_to_limits(initial_q)
