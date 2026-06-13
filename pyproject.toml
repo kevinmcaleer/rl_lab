@@ -64,7 +64,7 @@ dev = [
     "pytest-cov",
     "mcap",
     "ruff",
-    "black",
+    "black==26.5.1",  # pinned so local + CI formatting never drift
     "isort",
     "mypy",
     "types-PyYAML",

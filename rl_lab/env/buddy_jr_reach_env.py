@@ -116,9 +116,7 @@ class BuddyJrReachEnv(gym.Env):
             r = self.np_random.uniform(lo, hi)
             az = self.np_random.uniform(-bj.JOINT_LIMIT, bj.JOINT_LIMIT)
             el = self.np_random.uniform(-0.4, 1.0)
-            p = base + r * np.array(
-                [np.cos(el) * np.cos(az), np.cos(el) * np.sin(az), np.sin(el)]
-            )
+            p = base + r * np.array([np.cos(el) * np.cos(az), np.cos(el) * np.sin(az), np.sin(el)])
             if p[2] >= 0.02 and kin.is_reachable(p):
                 return p
         # Fallback: a configuration we know is reachable.
