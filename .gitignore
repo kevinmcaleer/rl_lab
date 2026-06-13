@@ -89,6 +89,7 @@ models/
 wandb/
 mlruns/
 tensorboard/
+lightning_logs/
 videos/
 *.mp4
 *.gif.tmp
@@ -99,6 +100,9 @@ replay_buffers/
 *.bullet
 MUJOCO_LOG.TXT
 .mujoco/
+
+# ---- Foxglove visualization ----
+*.mcap
 
 # ---- Generated URDF (kept source is the .xacro) ----
 urdf/buddy_jr/buddy_jr.generated.urdf
@@ -133,5 +137,6 @@ desktop.ini
 install/
 log/
 build_ros/
+build/
 *.bag
 *.db3
