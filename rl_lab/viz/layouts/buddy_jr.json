@@ -1,0 +1,175 @@
+{
+  "$schema": "https://foxglove.dev/schemas/studio-layout.json",
+  "name": "Buddy Jr RL Lab",
+  "configById": {
+    "3d!52acab66": {
+      "layers": [
+        {
+          "type": "foxglove.Grid",
+          "enabled": true,
+          "color": "#333333ff",
+          "size": 2,
+          "divisions": 10,
+          "lineWidth": 1
+        }
+      ],
+      "cameraState": {
+        "perspective": true,
+        "distance": 0.6,
+        "phi": 60,
+        "theta": -30,
+        "targetOffset": [0, 0, 0.08],
+        "thetaOffset": 0,
+        "fovy": 45,
+        "near": 0.001,
+        "far": 5000
+      },
+      "followMode": "no-follow",
+      "followTf": "world",
+      "scene": {
+        "labelScaleFactor": 1,
+        "syncCamera": false,
+        "ignoreColladaUpAxis": false,
+        "meshUpAxis": "Y_UP",
+        "transforms": {
+          "axisScale": 0.08,
+          "lineWidth": 1,
+          "showLabel": false,
+          "enablePreloading": true
+        },
+        "background": "#000000ff"
+      },
+      "publish": {
+        "type": "point",
+        "poseTopic": "/goal",
+        "pointTopic": "/clicked_point",
+        "poseEstimateTopic": "/initialpose",
+        "poseEstimateXDeviation": 0.5,
+        "poseEstimateYDeviation": 0.5,
+        "poseEstimateThetaDeviation": 0.2617993877991494
+      },
+      "imageMode": {},
+      "topics": {
+        "/tf": {
+          "visible": true
+        },
+        "/robot": {
+          "visible": true,
+          "color": "#7ab8f5ff"
+        },
+        "/scene": {
+          "visible": true
+        }
+      }
+    },
+    "Plot!82d5e2f5": {
+      "title": "Distance to target (m)",
+      "paths": [
+        {
+          "value": "/metrics.distance",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "showLine": true,
+          "color": "#f5a623ff",
+          "lineSize": 1.5
+        }
+      ],
+      "showXAxisLabels": true,
+      "showYAxisLabels": true,
+      "showLegend": true,
+      "legendDisplay": "floating",
+      "showPlotValuesInLegend": true,
+      "isSynced": true,
+      "xAxisVal": "timestamp",
+      "sidebarDimension": 240,
+      "xAxisPath": { "value": "", "enabled": true, "timestampMethod": "receiveTime" },
+      "minYValue": "",
+      "maxYValue": "",
+      "minXValue": "",
+      "maxXValue": "",
+      "followingViewWidth": 30
+    },
+    "Plot!f0afdb24": {
+      "title": "Reward & episode return",
+      "paths": [
+        {
+          "value": "/metrics.reward",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "showLine": true,
+          "color": "#4caf50ff",
+          "lineSize": 1.5
+        },
+        {
+          "value": "/metrics.episode_return",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "showLine": true,
+          "color": "#2196f3ff",
+          "lineSize": 1.5
+        }
+      ],
+      "showXAxisLabels": true,
+      "showYAxisLabels": true,
+      "showLegend": true,
+      "legendDisplay": "floating",
+      "showPlotValuesInLegend": true,
+      "isSynced": true,
+      "xAxisVal": "timestamp",
+      "sidebarDimension": 240,
+      "xAxisPath": { "value": "", "enabled": true, "timestampMethod": "receiveTime" },
+      "minYValue": "",
+      "maxYValue": "",
+      "minXValue": "",
+      "maxXValue": "",
+      "followingViewWidth": 30
+    },
+    "Plot!e00d627e": {
+      "title": "Success rate (rolling)",
+      "paths": [
+        {
+          "value": "/metrics.success_rate",
+          "enabled": true,
+          "timestampMethod": "receiveTime",
+          "showLine": true,
+          "color": "#00bcd4ff",
+          "lineSize": 1.5
+        }
+      ],
+      "showXAxisLabels": true,
+      "showYAxisLabels": true,
+      "showLegend": true,
+      "legendDisplay": "floating",
+      "showPlotValuesInLegend": true,
+      "isSynced": true,
+      "xAxisVal": "timestamp",
+      "sidebarDimension": 240,
+      "xAxisPath": { "value": "", "enabled": true, "timestampMethod": "receiveTime" },
+      "minYValue": 0,
+      "maxYValue": 1,
+      "minXValue": "",
+      "maxXValue": "",
+      "followingViewWidth": 30
+    }
+  },
+  "layout": {
+    "direction": "row",
+    "first": "3d!52acab66",
+    "second": {
+      "direction": "column",
+      "first": "Plot!82d5e2f5",
+      "second": {
+        "direction": "column",
+        "first": "Plot!f0afdb24",
+        "second": "Plot!e00d627e",
+        "splitPercentage": 50
+      },
+      "splitPercentage": 34
+    },
+    "splitPercentage": 62
+  },
+  "playbackConfig": {
+    "speed": 1
+  },
+  "globalVariables": {}
+}
