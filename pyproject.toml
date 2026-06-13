@@ -38,6 +38,7 @@ dependencies = [
     "foxglove-sdk",
     "tensorboard",
     "matplotlib",
+    "pyyaml",
 ]
 
 [project.optional-dependencies]
@@ -66,6 +67,7 @@ dev = [
     "black",
     "isort",
     "mypy",
+    "types-PyYAML",
     "pre-commit",
     "nbstripout",
     "mkdocs-material",
