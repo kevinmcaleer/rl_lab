@@ -61,6 +61,7 @@ rpi = ["adafruit-circuitpython-servokit"]
 dev = [
     "pytest",
     "pytest-cov",
+    "mcap",
     "ruff",
     "black",
     "isort",

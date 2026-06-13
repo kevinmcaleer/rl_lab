@@ -80,8 +80,8 @@ class MujocoBackend(SimBackend):
             self._qpos_adr.append(int(self._model.jnt_qposadr[jid]))
             self._dof_adr.append(int(self._model.jnt_dofadr[jid]))
 
-        self._targets = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
-        self._target_pos = np.zeros(3, dtype=np.float64)
+        self._targets: np.ndarray = np.zeros(bj.NUM_JOINTS, dtype=np.float64)
+        self._target_pos: np.ndarray = np.zeros(3, dtype=np.float64)
         self.reset()
 
     # --------------------------------------------------------------- helpers
