@@ -1,0 +1,36 @@
+# PPO via Stable-Baselines3 preset for the Buddy Jr RL Lab.
+#
+# Uses the production-grade SB3 PPO on the *continuous* reach env.
+# SB3's PPO is equivalent to PPOMin but with many engineering refinements:
+# orthogonal init, gradient clipping, learning-rate scheduling, etc.
+#
+# Recommended when you need reliable convergence; use PPOMin to learn
+# the algorithm from scratch.
+algo: ppo
+env_id: BuddyJrReach-v0
+total_steps: 100000
+
+# --- MLP policy hidden widths
+policy_kwargs:
+  net_arch: [64, 64]
+
+# --- steps collected per rollout (per CPU)
+n_steps: 1024
+
+# --- minibatch size
+batch_size: 64
+
+# --- gradient epochs per update
+n_epochs: 10
+
+# --- discount factor
+gamma: 0.99
+
+# --- GAE lambda
+gae_lambda: 0.95
+
+# --- PPO clip range
+clip_range: 0.2
+
+# --- learning rate
+learning_rate: 0.0003

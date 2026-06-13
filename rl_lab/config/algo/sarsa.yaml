@@ -1,0 +1,25 @@
+# SARSA hyperparameter preset for the Buddy Jr RL Lab.
+#
+# SARSA is the on-policy cousin of Q-Learning:
+#   Q(s,a) <- Q(s,a) + lr * [r + gamma * Q(s',a') - Q(s,a)]
+#
+# The key difference from Q-Learning: we use the *actual* next action a'
+# (sampled from the current epsilon-greedy policy) rather than max_a' Q(s',a').
+# This makes SARSA safer (more conservative) but sometimes slower to converge.
+algo: sarsa
+env_id: BuddyJrReachDiscrete-v0
+total_steps: 50000
+
+# --- learning rate
+lr: 0.1
+
+# --- discount factor
+gamma: 0.99
+
+# --- epsilon-greedy exploration schedule
+epsilon_start: 1.0
+epsilon_end: 0.05
+epsilon_decay: 0.995
+
+# --- binning resolution for the TabularBuddyJr observation wrapper
+bins: 7

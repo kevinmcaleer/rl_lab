@@ -1,0 +1,39 @@
+# TD3 (Twin Delayed Deep Deterministic policy gradient) via SB3.
+#
+# TD3 addresses Q-value overestimation in DDPG with three tricks:
+#   1. Twin critics: take the min of two Q estimates.
+#   2. Delayed actor updates: update actor less often than critics.
+#   3. Target policy smoothing: add noise to the target action.
+#
+# Deterministic policy -> good for smooth robot joint control.
+algo: td3
+env_id: BuddyJrReach-v0
+total_steps: 100000
+
+# --- learning rate for actor and both critics
+learning_rate: 0.001
+
+# --- replay buffer size
+buffer_size: 50000
+
+# --- steps before training starts
+learning_starts: 1000
+
+# --- minibatch size
+batch_size: 64
+
+# --- discount factor
+gamma: 0.99
+
+# --- Polyak averaging coefficient for target networks
+tau: 0.005
+
+# --- actor update frequency relative to critic updates
+policy_delay: 2
+
+# --- stddev of Gaussian noise added to target actions during training
+target_policy_noise: 0.2
+
+# --- MLP policy/critic hidden widths
+policy_kwargs:
+  net_arch: [64, 64]

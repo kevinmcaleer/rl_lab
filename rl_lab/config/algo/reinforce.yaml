@@ -1,0 +1,25 @@
+# REINFORCE (Monte-Carlo policy gradient) preset for the Buddy Jr RL Lab.
+#
+# REINFORCE is the simplest policy-gradient method:
+#   theta <- theta + lr * sum_t [ G_t * grad log pi(a_t|s_t; theta) ]
+# where G_t = sum_{k>=t} gamma^(k-t) * r_k  (return from step t).
+#
+# Teaching points:
+#   * No value function — the gradient estimate is high-variance.
+#   * A baseline (mean return) dramatically reduces variance at no cost.
+#   * Works on the discrete env so actions are Discrete(9).
+algo: reinforce
+env_id: BuddyJrReachDiscrete-v0
+total_steps: 50000
+
+# --- policy-network learning rate (Adam)
+lr: 0.001
+
+# --- discount factor for computing episode returns G_t
+gamma: 0.99
+
+# --- subtract mean return as a simple variance-reducing baseline
+use_baseline: true
+
+# --- hidden layer widths of the policy network
+hidden_dims: [64, 64]

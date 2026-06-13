@@ -1,0 +1,35 @@
+# SAC (Soft Actor-Critic) via Stable-Baselines3 for the Buddy Jr RL Lab.
+#
+# SAC is an off-policy actor-critic algorithm that maximises a trade-off between
+# expected return and entropy (temperature alpha controls the trade-off):
+#   J(pi) = E[ sum_t r_t + alpha * H(pi(.|s_t)) ]
+#
+# Excellent sample efficiency on continuous control. Uses the continuous env.
+algo: sac
+env_id: BuddyJrReach-v0
+total_steps: 100000
+
+# --- learning rate for actor, critic, and entropy coefficient
+learning_rate: 0.0003
+
+# --- replay buffer size (off-policy reuse)
+buffer_size: 50000
+
+# --- steps collected before starting gradient updates
+learning_starts: 1000
+
+# --- minibatch size drawn from replay buffer
+batch_size: 64
+
+# --- discount factor
+gamma: 0.99
+
+# --- soft target network update coefficient (Polyak averaging)
+tau: 0.005
+
+# --- 'auto' lets SB3 tune the entropy temperature; set a float to fix it
+ent_coef: auto
+
+# --- MLP policy hidden widths
+policy_kwargs:
+  net_arch: [64, 64]

@@ -1,0 +1,38 @@
+# DQN (Deep Q-Network) hyperparameter preset for the Buddy Jr RL Lab.
+#
+# DQN replaces the Q-table with a small neural network Q(s,a;theta),
+# trained with experience replay and a target network:
+#   loss = MSE( r + gamma * max_a' Q_target(s',a') , Q(s,a;theta) )
+#
+# Two key stabilisation tricks taught here:
+#   1. Replay buffer: breaks temporal correlation in training data.
+#   2. Target network: gives a stable regression target.
+algo: dqn
+env_id: BuddyJrReachDiscrete-v0
+total_steps: 50000
+
+# --- neural network learning rate (Adam optimizer)
+lr: 0.001
+
+# --- discount factor
+gamma: 0.99
+
+# --- replay buffer capacity (experience replay)
+buffer_size: 10000
+
+# --- minibatch size drawn from replay buffer each update
+batch_size: 64
+
+# --- how many steps to collect before starting gradient updates
+learning_starts: 500
+
+# --- how often (in steps) to copy online net -> target net
+target_update_freq: 200
+
+# --- epsilon-greedy exploration schedule
+epsilon_start: 1.0
+epsilon_end: 0.05
+epsilon_decay_steps: 10000
+
+# --- hidden layer widths (kept tiny for CPU-only CI)
+hidden_dims: [64, 64]

@@ -1,0 +1,42 @@
+# Minimal PPO (Proximal Policy Optimisation) preset for the Buddy Jr RL Lab.
+#
+# PPOMin is a from-scratch single-file PPO that teaches the three key ideas:
+#   1. Actor-Critic: a shared network produces both policy logits and a value V(s).
+#   2. GAE (Generalised Advantage Estimation): lower-variance advantage A_t.
+#   3. Clipped objective: clip(ratio, 1-clip_eps, 1+clip_eps) prevents huge steps.
+#
+# Works on the discrete env (Discrete(9) actions) so the policy head is a softmax.
+algo: ppo_min
+env_id: BuddyJrReachDiscrete-v0
+total_steps: 50000
+
+# --- learning rate for both actor and critic (Adam)
+lr: 0.0003
+
+# --- discount factor
+gamma: 0.99
+
+# --- GAE lambda: controls bias-variance trade-off in advantage estimation
+# lambda=1 -> high variance (pure Monte Carlo); lambda=0 -> high bias (TD(0))
+gae_lambda: 0.95
+
+# --- PPO clipping epsilon: keeps policy update close to the old policy
+clip_eps: 0.2
+
+# --- number of env steps collected before each update epoch
+n_steps: 512
+
+# --- number of gradient epochs over each collected rollout buffer
+n_epochs: 4
+
+# --- minibatch size for each gradient step
+batch_size: 64
+
+# --- value-function loss coefficient in the combined loss
+vf_coef: 0.5
+
+# --- entropy bonus coefficient (encourages exploration)
+ent_coef: 0.01
+
+# --- hidden layer widths (shared trunk)
+hidden_dims: [64, 64]

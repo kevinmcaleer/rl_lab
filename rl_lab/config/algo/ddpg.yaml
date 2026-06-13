@@ -1,0 +1,34 @@
+# DDPG (Deep Deterministic Policy Gradient) via Stable-Baselines3.
+#
+# DDPG is the original off-policy actor-critic for continuous actions.
+# It extends DQN to continuous action spaces using a deterministic policy
+# mu(s;theta) instead of a softmax. Exploration is achieved by adding
+# Ornstein-Uhlenbeck (or Gaussian) action noise during training.
+#
+# TD3 fixes many of DDPG's instability issues; include DDPG here for
+# historical comparison and to show why TD3's improvements matter.
+algo: ddpg
+env_id: BuddyJrReach-v0
+total_steps: 100000
+
+# --- learning rate for actor and critic
+learning_rate: 0.001
+
+# --- replay buffer size
+buffer_size: 50000
+
+# --- steps before training starts
+learning_starts: 1000
+
+# --- minibatch size
+batch_size: 64
+
+# --- discount factor
+gamma: 0.99
+
+# --- Polyak averaging coefficient
+tau: 0.005
+
+# --- MLP policy/critic hidden widths
+policy_kwargs:
+  net_arch: [64, 64]

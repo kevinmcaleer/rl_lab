@@ -1,0 +1,24 @@
+# Q-Learning hyperparameter preset for the Buddy Jr RL Lab.
+#
+# Q-Learning is the foundational off-policy tabular algorithm:
+#   Q(s,a) <- Q(s,a) + lr * [r + gamma * max_a' Q(s',a') - Q(s,a)]
+#
+# The tabular wrapper reduces obs to ~343 states (7^3 tip->target bins)
+# so the Q-table stays tractable for teaching purposes.
+algo: qlearning
+env_id: BuddyJrReachDiscrete-v0
+total_steps: 50000
+
+# --- learning rate controls how fast we update Q-values
+lr: 0.1
+
+# --- discount factor: how much future rewards matter (0=myopic, 1=far-sighted)
+gamma: 0.99
+
+# --- epsilon-greedy exploration: start fully random, decay to near-greedy
+epsilon_start: 1.0
+epsilon_end: 0.05
+epsilon_decay: 0.995
+
+# --- binning resolution for the TabularBuddyJr observation wrapper
+bins: 7
