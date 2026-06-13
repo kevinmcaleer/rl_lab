@@ -1,0 +1,43 @@
+# Build the MkDocs site and deploy it to GitHub Pages (gh-pages branch) on every
+# push to main. The site includes an mkdocstrings API reference, so the build
+# installs the package (its docstrings are read at build time).
+name: docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # gh-deploy pushes the built site to the gh-pages branch
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # gh-deploy needs history for the gh-pages branch
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # The lab + dev tooling (mkdocs-material, mkdocstrings) — the API
+      # reference imports rl_lab, so the package must be installed.
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Build site
+        run: mkdocs build --strict
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        run: mkdocs gh-deploy --force --no-history

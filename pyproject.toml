@@ -95,6 +95,10 @@ include = ["rl_lab*"]
 # ---------------------------------------------------------------------------
 [tool.ruff]
 line-length = 100
+# Teaching notebooks follow notebook idioms (mid-cell imports, semicolons to
+# suppress output) that don't fit module lint rules; they are executed in tests
+# instead. Exclude them from ruff.
+extend-exclude = ["notebooks"]
 
 [tool.ruff.lint]
 # E/W = pycodestyle, F = pyflakes, I = isort, UP = pyupgrade,

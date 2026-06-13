@@ -36,7 +36,7 @@ RL_LAB    := $(VENV_BIN)/rl-lab
 # .PHONY declarations — these targets never produce a file of the same name
 # ---------------------------------------------------------------------------
 
-.PHONY: help install install-sim lint type test docs sim foxglove jog clean
+.PHONY: help install install-sim lint type test docs docs-serve sim foxglove jog clean
 
 # ---------------------------------------------------------------------------
 # help  (default goal)
@@ -96,7 +96,10 @@ test: $(VENV)/bin/activate  ## Run pytest in quiet mode
 # docs
 # ---------------------------------------------------------------------------
 
-docs: $(VENV)/bin/activate  ## Serve the MkDocs documentation site locally (Ctrl-C to stop)
+docs: $(VENV)/bin/activate  ## Build the MkDocs site into site/ (strict)
+	$(MKDOCS) build --strict
+
+docs-serve: $(VENV)/bin/activate  ## Serve the MkDocs site locally with live reload (Ctrl-C to stop)
 	$(MKDOCS) serve
 
 # ---------------------------------------------------------------------------

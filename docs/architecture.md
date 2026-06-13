@@ -1,7 +1,7 @@
 # Buddy Jr RL Lab — Architecture Overview
 
 This is the *map* of the lab. If [`PLAN.md`](PLAN.md) is the **why** (the design
-decisions and the milestone roadmap) and [`experiments/README.md`](../experiments/README.md)
+decisions and the milestone roadmap) and [`experiments/README.md`](https://github.com/kevinmcaleer/rl_lab/blob/main/experiments/README.md)
 is the **what you do** (the 12-step learning ladder), this document is the
 **how the pieces fit together** — the layers, who owns what, and exactly what
 happens, in order, during a single training step.
@@ -12,7 +12,7 @@ thing from the physics?" — questions whose answers *are* the architecture.
 
 > New to the project? Skim [`PLAN.md`](PLAN.md) §1–2 first (the stack decision),
 > then come back here for the structure, then dive into
-> [`experiments/README.md`](../experiments/README.md) to actually learn RL.
+> [`experiments/README.md`](https://github.com/kevinmcaleer/rl_lab/blob/main/experiments/README.md) to actually learn RL.
 
 ---
 
@@ -268,7 +268,7 @@ forward pass, map the action through `servo_map`, and drive the servos — while
 publishing the *same* `JointState`/transform stream to Foxglove so the real arm
 and the sim arm overlay in one view. The `[rpi]` extra
 (`adafruit-circuitpython-servokit`) carries only what the Raspberry Pi 5 runtime
-needs. See [`experiments/README.md`](../experiments/README.md) Experiments 11–12
+needs. See [`experiments/README.md`](https://github.com/kevinmcaleer/rl_lab/blob/main/experiments/README.md) Experiments 11–12
 for the safety shim (rate limiter, e-stop, dry-run) that wraps this path.
 
 ---
@@ -278,10 +278,10 @@ for the safety shim (rate limiter, e-stop, dry-run) that wraps this path.
 - **The design rationale and milestone roadmap:** [`PLAN.md`](PLAN.md) —
   the reconciled stack decision, the full directory layout, and the M1–M7
   milestones this architecture is built out across.
-- **The hands-on learning ladder:** [`experiments/README.md`](../experiments/README.md)
+- **The hands-on learning ladder:** [`experiments/README.md`](https://github.com/kevinmcaleer/rl_lab/blob/main/experiments/README.md)
   — the 12 runnable lessons, each of which is just a particular wiring of the
   layers described above.
-- **The robot itself:** [`urdf/buddy_jr.urdf`](../urdf/buddy_jr.urdf) and the
+- **The robot itself:** [`urdf/buddy_jr.urdf`](https://github.com/kevinmcaleer/rl_lab/blob/main/urdf/buddy_jr.urdf) and the
   Buddy Jr build at <https://www.kevsrobots.com/blog/buddy_jr.html>.
 
 Whenever a lesson confuses you, come back to the layer diagram in §1 and ask:

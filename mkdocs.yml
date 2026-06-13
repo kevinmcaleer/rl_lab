@@ -1,0 +1,87 @@
+site_name: Buddy Jr RL Lab
+site_description: Learn reinforcement learning on a 4-DOF robot arm — sim to real.
+site_url: https://kevinmcaleer.github.io/rl_lab/
+repo_url: https://github.com/kevinmcaleer/rl_lab
+repo_name: kevinmcaleer/rl_lab
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - toc.follow
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_source: false
+            members_order: source
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.details
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Install on macOS: getting_started/installation_macos.md
+      - Foxglove setup: getting_started/foxglove_setup.md
+      - ROS2 (advanced): getting_started/installation_ros2.md
+      - Troubleshooting / FAQ: troubleshooting.md
+  - Concepts:
+      - MDPs: concepts/mdps.md
+      - Reward design: concepts/reward_design.md
+      - Exploration vs exploitation: concepts/exploration_vs_exploitation.md
+      - On- vs off-policy: concepts/on_vs_off_policy.md
+      - Value vs policy methods: concepts/value_vs_policy_methods.md
+      - Terminated vs truncated: concepts/terminated_vs_truncated.md
+  - The robot:
+      - URDF: robot/urdf.md
+      - Kinematics: robot/kinematics.md
+      - Frames: robot/frames.md
+      - Wiring & power: robot/wiring.md
+  - Experiments:
+      - Overview: experiments.md
+      - 01 · Bandit base: experiments/01_bandit.md
+      - 02 · Build the world: experiments/02_world.md
+      - 03 · Tabular Q-learning: experiments/03_qlearning.md
+      - 04 · Reward shaping: experiments/04_reward_shaping.md
+      - 05 · DQN: experiments/05_dqn.md
+      - 06 · Generalisation: experiments/06_generalisation.md
+      - 07 · REINFORCE: experiments/07_reinforce.md
+      - 08 · PPO: experiments/08_ppo.md
+      - 09 · Continuous PPO: experiments/09_ppo_continuous.md
+      - 10 · SAC + aim: experiments/10_sac_aim.md
+      - 11 · Sim-to-real gap: experiments/11_robustify.md
+      - 12 · Deploy: experiments/12_deploy.md
+  - Design & release:
+      - Architecture: architecture.md
+      - Project plan: PLAN.md
+      - Releasing: releasing.md
+  - API reference: reference.md

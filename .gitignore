@@ -142,3 +142,6 @@ build_ros/
 build/
 *.bag
 *.db3
+
+# MkDocs build output
+site/
