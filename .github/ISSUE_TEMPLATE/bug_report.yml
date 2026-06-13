@@ -1,0 +1,124 @@
+name: Bug Report
+description: File a bug or defect in rl_lab
+labels: [bug]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please fill in the details below to help us reproduce and fix it.
+
+  - type: input
+    id: title
+    attributes:
+      label: Summary
+      description: A brief title for this bug
+      placeholder: e.g., PyBullet simulator crashes on arm reset
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the bug in detail
+      placeholder: What is the issue? What unexpected behavior occurs?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide clear, numbered steps to reproduce the bug.
+      placeholder: |
+        1. Install rl_lab with `pip install -e .`
+        2. Run `rl-lab train --algo ppo --env BuddyJrReach-v0`
+        3. Observe the crash in the terminal
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen instead?
+      placeholder: The training should run for at least 5 steps without errors.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happens?
+      placeholder: The program raises a RuntimeError about URDF joint limits.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which OS are you running on?
+      options:
+        - macOS (Intel)
+        - macOS (Apple Silicon)
+        - Linux (Ubuntu 22.04)
+        - Linux (Ubuntu 24.04)
+        - Other Linux
+        - Windows (WSL2)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python_version
+    attributes:
+      label: Python version
+      description: Which Python version are you using?
+      options:
+        - "3.10"
+        - "3.11"
+        - "3.12"
+        - "3.13"
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      description: |
+        Any additional environment info (pip list output, which extras you installed, etc.).
+      placeholder: |
+        pip list output:
+        RL-lab 0.0.1
+        pybullet 3.2.5
+        gymnasium 0.29.0
+        ...
+
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Traceback / error output
+      description: If applicable, paste the full error message or traceback
+      render: python
+      placeholder: |
+        Traceback (most recent call last):
+          File "...", line ..., in <module>
+        RuntimeError: ...
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I have checked the [troubleshooting docs](../docs) and [FAQ](../experiments/README.md)
+          required: false
+        - label: I have searched existing issues and found no duplicates
+          required: true
+        - label: This is a reproducible bug (not a question about how RL works)
+          required: true

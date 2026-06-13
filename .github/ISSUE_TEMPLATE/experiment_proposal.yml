@@ -1,0 +1,143 @@
+name: Experiment Proposal
+description: Propose a new experiment to add to the curriculum ladder
+labels: [experiment]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Great! You have an idea for a new experiment or variation that teaches RL concepts.
+        Describe it here and help us understand how it fits in the learning ladder.
+
+  - type: input
+    id: title
+    attributes:
+      label: Experiment title
+      description: A clear, descriptive name for this experiment
+      placeholder: e.g., Multi-arm coordination with shared rewards
+    validations:
+      required: true
+
+  - type: textarea
+    id: concept
+    attributes:
+      label: Concept taught
+      description: |
+        What core RL or robotics concept does this experiment introduce or reinforce?
+      placeholder: |
+        Cooperative multi-agent learning; how agents must coordinate to maximize total reward;
+        trade-offs between individual and collective objectives.
+    validations:
+      required: true
+
+  - type: textarea
+    id: learning_objectives
+    attributes:
+      label: Learning objectives
+      description: |
+        What should a learner be able to do after completing this experiment?
+        Use action verbs: understand, implement, apply, compare, design, etc.
+      placeholder: |
+        - Understand reward shaping for multi-agent scenarios
+        - Implement a shared reward signal across multiple agents
+        - Compare independent vs. cooperative policies on a shared task
+        - Design a curriculum where agents learn to cooperate progressively
+    validations:
+      required: true
+
+  - type: dropdown
+    id: algorithm
+    attributes:
+      label: Primary algorithm
+      description: Which algorithm(s) does the learner train with?
+      options:
+        - Multi-armed Bandit
+        - Tabular Q-learning
+        - DQN
+        - Policy Gradients (REINFORCE)
+        - PPO
+        - SAC
+        - Custom / Teaching implementation
+        - Multiple (comparison)
+    validations:
+      required: true
+
+  - type: textarea
+    id: what_learner_does
+    attributes:
+      label: What the learner runs and observes
+      description: |
+        Describe the experiment from the learner's perspective.
+        What commands do they run? What do they see in Foxglove or the terminal?
+      placeholder: |
+        The learner runs:
+        `rl-lab train --algo ppo --env BuddyJrMultiArm-v0 --curriculum
+        
+        Foxglove streams two Buddy Jr arms side-by-side.
+        As training progresses, the learner watches both arms:
+        - Episodes 0-50: arms flail independently (exploring separate reward regions)
+        - Episodes 50-200: arms begin to coordinate (shared reward gradient guides both)
+        - Episodes 200+: arms execute a complex handoff motion efficiently
+        
+        A plot shows individual vs. total reward over time, revealing the cooperation phase.
+    validations:
+      required: true
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: |
+        Which earlier experiments should a learner complete first?
+        Which RL concepts should they already understand?
+      placeholder: |
+        Prerequisites:
+        - Experiment 8 (PPO) — multi-agent learning extends PPO
+        - Experiment 4 (Reward shaping) — designing shared rewards is key
+        
+        Learner should understand:
+        - How policy gradients optimize a scalar reward signal
+        - Why reward design matters
+    validations:
+      required: true
+
+  - type: textarea
+    id: position_in_ladder
+    attributes:
+      label: Where in the learning ladder?
+      description: |
+        After which experiment does this fit? Does it introduce an entirely new rung,
+        or is it a variant that reinforces an existing one?
+      placeholder: |
+        New rung after Experiment 10 (SAC + the full aim task):
+        Experiment 10.5: Scaling to multi-agent cooperative control.
+        
+        OR variant of Experiment 9-10: optional extension once learners have grasped
+        single-agent continuous control, to show how policies compose.
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation_notes
+    attributes:
+      label: Implementation notes (optional)
+      description: |
+        Any thoughts on how to implement this? Code sketches, environment design hints, etc.
+      placeholder: |
+        - Extend BuddyJrEnv to spawn two arms in the same simulator step
+        - Use gym.vector.AsyncVectorEnv for parallel environment rollouts
+        - Reward = reach_cost_arm1 + reach_cost_arm2 - penalty_for_collision
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: This teaches a genuine RL or robotics concept (not a marginal variation)
+          required: true
+        - label: A learner could realistically complete this in 30-60 minutes
+          required: true
+        - label: It fits the teaching mission and Mac-friendly stack
+          required: true

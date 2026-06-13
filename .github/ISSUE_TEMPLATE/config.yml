@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Ask on GitHub Discussions
+    url: https://github.com/kevinmcaleer/rl_lab/discussions
+    about: Questions, ideas, and general discussion about RL and the experiments.
+  - name: Buddy Jr blog & docs
+    url: https://www.kevsrobots.com/blog/buddy_jr.html
+    about: Robot hardware, assembly, and calibration. Start here if you have hardware questions.
