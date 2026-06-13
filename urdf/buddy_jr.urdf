@@ -1,0 +1,247 @@
+<?xml version="1.0" ?>
+<!--
+  Buddy Jr - 4-DOF robot arm (kevsrobots.com)
+  ====================================================================
+  Primitive-only URDF (no external meshes) for PyBullet / rviz / Foxglove.
+
+  Units: SI. lengths = metres, mass = kg, angles = radians.
+
+  Coordinate convention (REP-103, right-handed):
+    +X forward, +Y left, +Z up. Base sits on the ground at z=0.
+
+  Kinematics (4 revolute joints, all SG90 hobby servos, ~180 deg range):
+    base_yaw      : Joint 0  - rotates whole arm left/right about Z (vertical)
+    shoulder_pitch: Joint 1  - raises/lowers first segment about Y
+    elbow_pitch   : Joint 2  - bends second segment about Y
+    camera_tilt   : Joint 3  - tilts the camera end-effector about Y
+
+  Real link lengths: SHOULDER_LENGTH = 80 mm, ELBOW_LENGTH = 80 mm.
+
+  Servo mapping note: each revolute joint limit is +/- 1.5708 rad (90 deg)
+  i.e. a 180 deg span, matching an SG90's usable travel. On the real robot
+  the PCA9685 / ServoKit commands degrees 0..180; URDF radian theta maps as
+  servo_deg = degrees(theta) + 90  (URDF 0 rad == servo 90 deg, the centre).
+-->
+<robot name="buddy_jr">
+
+  <!-- ============================ MATERIALS ============================ -->
+  <material name="base_grey">   <color rgba="0.25 0.25 0.28 1.0"/></material>
+  <material name="link_orange"> <color rgba="0.90 0.45 0.10 1.0"/></material>
+  <material name="link_blue">   <color rgba="0.10 0.45 0.85 1.0"/></material>
+  <material name="joint_dark">  <color rgba="0.15 0.15 0.15 1.0"/></material>
+  <material name="cam_green">   <color rgba="0.10 0.65 0.30 1.0"/></material>
+  <material name="lens_black">  <color rgba="0.02 0.02 0.02 1.0"/></material>
+
+  <!-- ============================ BASE LINK ============================ -->
+  <!-- Static footprint that bolts to the bench. 60mm dia x 25mm tall puck. -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.030" length="0.025"/>
+      </geometry>
+      <material name="base_grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.030" length="0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- 3D-printed base, ~150 g. Solid cylinder inertia, r=0.03 h=0.025 -->
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <mass value="0.150"/>
+      <inertia ixx="4.156e-5" ixy="0.0" ixz="0.0"
+               iyy="4.156e-5" iyz="0.0" izz="6.750e-5"/>
+    </inertial>
+  </link>
+
+  <!-- ====================== JOINT 0: BASE YAW ========================= -->
+  <joint name="base_yaw" type="revolute">
+    <parent link="base_link"/>
+    <child  link="shoulder_bracket"/>
+    <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-1.5708" upper="1.5708" effort="1.5" velocity="6.0"/>
+    <dynamics damping="0.05" friction="0.02"/>
+  </joint>
+
+  <!-- ===================== SHOULDER BRACKET / HUB ===================== -->
+  <!-- Rotating turret that carries the shoulder servo. 40mm cube-ish. -->
+  <link name="shoulder_bracket">
+    <visual>
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.040 0.040 0.025"/>
+      </geometry>
+      <material name="joint_dark"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.040 0.040 0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- ~50 g box, 0.04 x 0.04 x 0.025 -->
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <mass value="0.050"/>
+      <inertia ixx="9.27e-6" ixy="0.0" ixz="0.0"
+               iyy="9.27e-6" iyz="0.0" izz="1.333e-5"/>
+    </inertial>
+  </link>
+
+  <!-- ==================== JOINT 1: SHOULDER PITCH ===================== -->
+  <joint name="shoulder_pitch" type="revolute">
+    <parent link="shoulder_bracket"/>
+    <child  link="upper_arm"/>
+    <!-- Pivot at top of the bracket -->
+    <origin xyz="0 0 0.025" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="1.5" velocity="6.0"/>
+    <dynamics damping="0.05" friction="0.02"/>
+  </joint>
+
+  <!-- ====================== UPPER ARM (SHOULDER) ====================== -->
+  <!-- First 80mm segment. Modelled as a slim box along +Z from the pivot. -->
+  <link name="upper_arm">
+    <visual>
+      <origin xyz="0 0 0.040" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.020 0.018 0.080"/>
+      </geometry>
+      <material name="link_orange"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.040" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.020 0.018 0.080"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- ~40 g slender box, 0.02 x 0.018 x 0.08, com at mid-length -->
+      <origin xyz="0 0 0.040" rpy="0 0 0"/>
+      <mass value="0.040"/>
+      <inertia ixx="2.241e-5" ixy="0.0" ixz="0.0"
+               iyy="2.267e-5" iyz="0.0" izz="2.413e-6"/>
+    </inertial>
+  </link>
+
+  <!-- ===================== JOINT 2: ELBOW PITCH ======================= -->
+  <joint name="elbow_pitch" type="revolute">
+    <parent link="upper_arm"/>
+    <child  link="forearm"/>
+    <!-- Pivot at the far (80mm) end of the upper arm -->
+    <origin xyz="0 0 0.080" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="1.2" velocity="6.0"/>
+    <dynamics damping="0.05" friction="0.02"/>
+  </joint>
+
+  <!-- ======================== FOREARM (ELBOW) ======================== -->
+  <!-- Second 80mm segment. -->
+  <link name="forearm">
+    <visual>
+      <origin xyz="0 0 0.040" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.016 0.080"/>
+      </geometry>
+      <material name="link_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.040" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.018 0.016 0.080"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- ~30 g slender box, 0.018 x 0.016 x 0.08 -->
+      <origin xyz="0 0 0.040" rpy="0 0 0"/>
+      <mass value="0.030"/>
+      <inertia ixx="1.664e-5" ixy="0.0" ixz="0.0"
+               iyy="1.681e-5" iyz="0.0" izz="1.450e-6"/>
+    </inertial>
+  </link>
+
+  <!-- ==================== JOINT 3: CAMERA TILT ======================== -->
+  <joint name="camera_tilt" type="revolute">
+    <parent link="forearm"/>
+    <child  link="camera_mount"/>
+    <!-- Pivot at the far end of the forearm -->
+    <origin xyz="0 0 0.080" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-1.5708" upper="1.5708" effort="0.8" velocity="6.0"/>
+    <dynamics damping="0.05" friction="0.02"/>
+  </joint>
+
+  <!-- ===================== CAMERA MOUNT / HOLDER ====================== -->
+  <!-- Small 3D-printed holder that carries the Pi camera module. -->
+  <link name="camera_mount">
+    <visual>
+      <origin xyz="0 0 0.010" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.020"/>
+      </geometry>
+      <material name="cam_green"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.010" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.020"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- ~15 g holder, 0.025 x 0.025 x 0.02 (box) -->
+      <origin xyz="0 0 0.010" rpy="0 0 0"/>
+      <mass value="0.015"/>
+      <inertia ixx="1.281e-6" ixy="0.0" ixz="0.0"
+               iyy="1.281e-6" iyz="0.0" izz="1.563e-6"/>
+    </inertial>
+  </link>
+
+  <!-- ================ END-EFFECTOR: CAMERA / LENS ===================== -->
+  <!-- Fixed link = the Pi camera optical body. Its frame is the TCP -->
+  <!-- (tool centre point) used as the end-effector for IK / RL reward. -->
+  <joint name="camera_joint" type="fixed">
+    <parent link="camera_mount"/>
+    <child  link="camera_link"/>
+    <!-- Camera sits on the front (+X) face of the holder, looking +X -->
+    <origin xyz="0.0145 0 0.010" rpy="0 0 0"/>
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+      <!-- Lens barrel pointing along +X (the camera's optical axis) -->
+      <origin xyz="0.004 0 0" rpy="0 1.5708 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.008"/>
+      </geometry>
+      <material name="lens_black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.004 0 0" rpy="0 1.5708 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.008"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- ~3 g lens; tiny but non-zero so PyBullet keeps it dynamic -->
+      <origin xyz="0.004 0 0" rpy="0 0 0"/>
+      <mass value="0.003"/>
+      <inertia ixx="3.475e-8" ixy="0.0" ixz="0.0"
+               iyy="3.475e-8" iyz="0.0" izz="3.75e-8"/>
+    </inertial>
+  </link>
+
+  <!-- Optical frame: standard camera convention (+Z forward, +X right,
+       +Y down) for image / projection math, rotated from camera_link. -->
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child  link="camera_optical_frame"/>
+    <origin xyz="0.008 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+
+  <link name="camera_optical_frame"/>
+
+</robot>

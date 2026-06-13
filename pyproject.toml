@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rl-lab"
+version = "0.0.1"
+description = "Buddy Jr RL Lab: learn reinforcement learning on a 4-DOF robot arm in a Mac-friendly sim (PyBullet + Gymnasium + SB3 + Foxglove)."
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Kevin McAleer", email = "kevinmcaleer@gmail.com" }]
+keywords = ["reinforcement-learning", "robotics", "pybullet", "gymnasium", "foxglove", "urdf", "education"]
+
+# Default Mac-friendly stack. Versions are pinned loosely here and will be
+# tightened as the package is built out (see the M1 milestone issues).
+dependencies = [
+    "numpy",
+    "gymnasium",
+    "pybullet",
+    "stable-baselines3",
+    "foxglove-sdk",
+]
+
+[project.optional-dependencies]
+mujoco = ["mujoco"]
+ros2 = []          # advanced track runs in Docker/Linux; see docs
+rpi = ["adafruit-circuitpython-servokit"]
+dev = ["pytest", "ruff", "mypy", "mkdocs-material"]
+
+[project.urls]
+Homepage = "https://www.kevsrobots.com/blog/buddy_jr.html"
+Repository = "https://github.com/kevinmcaleer/rl_lab"
+
+[project.scripts]
+rl-lab = "rl_lab.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["rl_lab*"]
+
+[tool.ruff]
+line-length = 100
