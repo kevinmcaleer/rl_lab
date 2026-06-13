@@ -143,4 +143,4 @@ class DomainRandomization(gym.Wrapper):
         a = np.clip(a, -1.0, 1.0)
         self._prev_action = a
         obs, reward, terminated, truncated, info = self.env.step(a)
-        return self._noisy_obs(obs), reward, terminated, truncated, info
+        return self._noisy_obs(obs), float(reward), terminated, truncated, info
