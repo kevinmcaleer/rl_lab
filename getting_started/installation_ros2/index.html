@@ -1,0 +1,2028 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Learn reinforcement learning on a 4-DOF robot arm — sim to real.">
+      
+      
+      
+        <link rel="canonical" href="https://kevinmcaleer.github.io/rl_lab/getting_started/installation_ros2/">
+      
+      
+        <link rel="prev" href="../foxglove_setup/">
+      
+      
+        <link rel="next" href="../../troubleshooting/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>ROS2 (advanced) - Buddy Jr RL Lab</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ros2-rviz2-installation-advanced-track" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-header__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Buddy Jr RL Lab
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ROS2 (advanced)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-nav__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Buddy Jr RL Lab
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation_macos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install on macOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foxglove_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foxglove setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 (advanced)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 (advanced)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-pull-the-ros2-humble-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Pull the ROS2 Humble image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-start-an-interactive-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Start an interactive container
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-install-rl_lab-inside-the-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Install rl_lab inside the container
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-run-robot_state_publisher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Run robot_state_publisher
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-start-rviz2-with-the-buddy-jr-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Start rviz2 with the Buddy Jr config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-run-a-lesson-with-the-ros2-back-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Run a lesson with the ROS2 back-end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-the-pipeline-looks-like-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What the pipeline looks like end-to-end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-not-install-ros2-natively-on-macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why not install ROS2 natively on macOS?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting / FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/reward_design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reward design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/exploration_vs_exploitation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exploration vs exploitation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/on_vs_off_policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    On- vs off-policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/value_vs_policy_methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Value vs policy methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/terminated_vs_truncated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminated vs truncated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The robot
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The robot
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/kinematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kinematics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/frames/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiring & power
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Experiments
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/01_bandit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Bandit base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/02_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Build the world
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/03_qlearning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Tabular Q-learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/04_reward_shaping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Reward shaping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/05_dqn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · DQN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/06_generalisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Generalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/07_reinforce/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · REINFORCE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/08_ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/09_ppo_continuous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Continuous PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/10_sac_aim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · SAC + aim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/11_robustify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11 · Sim-to-real gap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../experiments/12_deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12 · Deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & release
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design & release
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-pull-the-ros2-humble-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Pull the ROS2 Humble image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-start-an-interactive-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Start an interactive container
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-install-rl_lab-inside-the-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Install rl_lab inside the container
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-run-robot_state_publisher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Run robot_state_publisher
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-start-rviz2-with-the-buddy-jr-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Start rviz2 with the Buddy Jr config
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-run-a-lesson-with-the-ros2-back-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Run a lesson with the ROS2 back-end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-what-the-pipeline-looks-like-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. What the pipeline looks like end-to-end
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-not-install-ros2-natively-on-macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why not install ROS2 natively on macOS?
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ros2-rviz2-installation-advanced-track">ROS2 / rviz2 Installation (Advanced Track)<a class="headerlink" href="#ros2-rviz2-installation-advanced-track" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Do NOT install ROS2 natively on macOS.</strong>  ROS2 Humble (and later) has no
+official macOS arm64 support.  Attempting a source build on Apple Silicon is
+fragile, time-consuming, and unnecessary — the Docker path below takes under
+10 minutes and works perfectly on any Mac, Linux machine, or Windows host.</p>
+</blockquote>
+<p>This guide covers the optional ROS2 visualisation path for Buddy Jr RL Lab.
+All RL code is identical whether you use Foxglove (the default, no ROS required)
+or rviz2.  Only the visualisation <em>sink</em> changes.</p>
+<p>If you just want to run the experiments, use the default Foxglove path described
+in <code>docs/getting_started/installation.md</code>.  Come here only when you already live
+in ROS2 or want the full "joint-angles → robot_state_publisher → TF → rviz2"
+pipeline as a learning exercise.</p>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Docker Desktop (macOS / Windows) <strong>or</strong> Docker Engine (Linux).<br />
+  Download: <a href="https://docs.docker.com/get-docker/">https://docs.docker.com/get-docker/</a></li>
+<li>The <code>rl_lab</code> repository cloned on your host machine.</li>
+<li>(Optional) An X11 server on macOS (e.g. XQuartz) <strong>or</strong> use
+  <code>rviz2 --display</code> inside the container via VNC — both options are described
+  below.</li>
+</ul>
+<hr />
+<h2 id="1-pull-the-ros2-humble-image">1. Pull the ROS2 Humble image<a class="headerlink" href="#1-pull-the-ros2-humble-image" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>pull<span class="w"> </span>ros:humble
+</code></pre></div>
+<p>Humble is the current LTS release (supported until May 2027) and the version
+the lab is tested against.  If you need a newer distro, substitute <code>ros:iron</code>
+or <code>ros:jazzy</code> — the commands are identical.</p>
+<hr />
+<h2 id="2-start-an-interactive-container">2. Start an interactive container<a class="headerlink" href="#2-start-an-interactive-container" title="Permanent link">&para;</a></h2>
+<p>Mount the <code>rl_lab</code> repository into the container so edits you make on the host
+are immediately visible inside Docker:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>rl_lab_ros2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span><span class="nv">$DISPLAY</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>/tmp/.X11-unix:/tmp/.X11-unix<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span>:/workspace<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-w<span class="w"> </span>/workspace<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--network<span class="w"> </span>host<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ros:humble<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>bash
+</code></pre></div>
+<p><strong>macOS with XQuartz:</strong> Start XQuartz first, then run
+<code>xhost +localhost</code> in a Terminal before launching the container.  Set
+<code>-e DISPLAY=host.docker.internal:0</code> instead of <code>$DISPLAY</code>.</p>
+<p><strong>macOS without XQuartz (VNC option):</strong> Add a VNC server inside the container
+(e.g. <code>tigervnc</code>) and connect from your Mac's built-in Screen Sharing app.  A
+simpler alternative is to record and replay sessions with <code>ros2 bag</code> instead of
+running rviz2 interactively.</p>
+<hr />
+<h2 id="3-install-rl_lab-inside-the-container">3. Install rl_lab inside the container<a class="headerlink" href="#3-install-rl_lab-inside-the-container" title="Permanent link">&para;</a></h2>
+<p>Run these commands <em>inside</em> the container (<code>docker exec</code> or the shell from
+step 2):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Source the ROS2 environment.</span>
+<span class="nb">source</span><span class="w"> </span>/opt/ros/humble/setup.bash
+
+<span class="c1"># Install rl_lab with its ROS2 optional dependencies.</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;/workspace[ros2]&quot;</span>
+
+<span class="c1"># Verify rclpy is importable.</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import rclpy; print(&#39;rclpy OK&#39;)&quot;</span>
+</code></pre></div>
+<p>The <code>[ros2]</code> extra installs nothing extra at the Python level (rclpy is already
+present in the ROS image); the bracket exists so the dependency is declared in
+<code>pyproject.toml</code> and so tooling can detect the optional path.</p>
+<hr />
+<h2 id="4-run-robot_state_publisher">4. Run robot_state_publisher<a class="headerlink" href="#4-run-robot_state_publisher" title="Permanent link">&para;</a></h2>
+<p><code>robot_state_publisher</code> converts the URDF + incoming <code>sensor_msgs/JointState</code>
+messages into a live TF tree that rviz2 uses to render the robot.</p>
+<p>Open a <em>second</em> terminal in the container (or a new <code>docker exec</code> session):</p>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>/opt/ros/humble/setup.bash
+
+<span class="c1"># Read the URDF from the repository.</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">URDF_PATH</span><span class="o">=</span>/workspace/urdf/buddy_jr.urdf
+
+<span class="c1"># Launch robot_state_publisher with the URDF loaded as a parameter.</span>
+ros2<span class="w"> </span>run<span class="w"> </span>robot_state_publisher<span class="w"> </span>robot_state_publisher<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--ros-args<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span>robot_description:<span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>cat<span class="w"> </span><span class="nv">$URDF_PATH</span><span class="k">)</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p>You should see a log line like:</p>
+<div class="highlight"><pre><span></span><code>[robot_state_publisher]: Robot initialized
+</code></pre></div>
+<p>Leave this terminal running throughout your session.</p>
+<hr />
+<h2 id="5-start-rviz2-with-the-buddy-jr-config">5. Start rviz2 with the Buddy Jr config<a class="headerlink" href="#5-start-rviz2-with-the-buddy-jr-config" title="Permanent link">&para;</a></h2>
+<p>Open a <em>third</em> terminal in the container:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">source</span><span class="w"> </span>/opt/ros/humble/setup.bash
+
+rviz2<span class="w"> </span>-d<span class="w"> </span>/workspace/rl_lab/viz/rviz/buddy_jr.rviz
+</code></pre></div>
+<p>The rviz2 config (<code>rl_lab/viz/rviz/buddy_jr.rviz</code>) pre-loads four displays:</p>
+<table>
+<thead>
+<tr>
+<th>Display</th>
+<th>What you see</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Grid</strong></td>
+<td>Ground-plane reference grid at z=0</td>
+</tr>
+<tr>
+<td><strong>RobotModel</strong></td>
+<td>Buddy Jr arm driven by the URDF + TF</td>
+</tr>
+<tr>
+<td><strong>TF</strong></td>
+<td>Coordinate frames for each link</td>
+</tr>
+<tr>
+<td><strong>TargetMarker</strong></td>
+<td>Goal sphere (green = tip inside tolerance, amber = not yet)</td>
+</tr>
+</tbody>
+</table>
+<p>rviz2 will show the arm at its zero pose until an experiment starts publishing
+<code>/joint_states</code>.</p>
+<hr />
+<h2 id="6-run-a-lesson-with-the-ros2-back-end">6. Run a lesson with the ROS2 back-end<a class="headerlink" href="#6-run-a-lesson-with-the-ros2-back-end" title="Permanent link">&para;</a></h2>
+<p>The <code>ROS2Publisher</code> class in <code>rl_lab/viz/rviz/ros2_publisher.py</code> has the same
+interface as <code>FoxgloveStreamer</code>.  To use it, replace the streamer import in any
+experiment script:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Default Foxglove path (no change needed on macOS / plain Linux):</span>
+<span class="c1"># from rl_lab.viz.foxglove_bridge import FoxgloveStreamer as Streamer</span>
+
+<span class="c1"># ROS2 path (inside the Docker container):</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rl_lab.viz.rviz.ros2_publisher</span><span class="w"> </span><span class="kn">import</span> <span class="n">ROS2Publisher</span> <span class="k">as</span> <span class="n">Streamer</span>
+
+<span class="k">with</span> <span class="n">Streamer</span><span class="p">(</span><span class="n">render_mode</span><span class="o">=</span><span class="s2">&quot;ros2&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">streamer</span><span class="p">:</span>
+    <span class="c1"># ... training loop ...</span>
+    <span class="n">streamer</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">joint_q</span><span class="p">,</span> <span class="n">p_ee</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+</code></pre></div>
+<p>No other change is needed.  The <code>publish()</code> signature is identical, including
+the optional keyword arguments (<code>reward</code>, <code>episode_return</code>, <code>success_rate</code>,
+<code>force</code>).</p>
+<hr />
+<h2 id="7-what-the-pipeline-looks-like-end-to-end">7. What the pipeline looks like end-to-end<a class="headerlink" href="#7-what-the-pipeline-looks-like-end-to-end" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code> experiment script
+      |
+      | streamer.publish(joint_q, p_ee, g, dist)
+      v
+ ROS2Publisher  (rl_lab/viz/rviz/ros2_publisher.py)
+      |
+      |-- publishes /joint_states (sensor_msgs/JointState)
+      |-- publishes /target_marker (visualization_msgs/Marker)
+      v
+ robot_state_publisher    (terminal 2)
+      |
+      | reads /robot_description param (buddy_jr.urdf)
+      | + /joint_states  -&gt;  broadcasts TF tree
+      v
+ rviz2  (terminal 3)
+      |
+      |-- RobotModel display renders arm from TF + URDF meshes
+      |-- TF display shows per-link coordinate frames
+      |-- Marker display shows target sphere
+</code></pre></div>
+<p>This is the same conceptual flow as the Foxglove path — joint angles flow into
+a transform tree which drives the 3D geometry — but using the standard ROS2
+messaging stack instead of the Foxglove SDK.  Comparing the two paths
+side-by-side is itself a useful exercise: the policy never changes; only the
+rendering sink does.</p>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<p><strong><code>rclpy</code> not found outside Docker</strong></p>
+<p>If you see:</p>
+<div class="highlight"><pre><span></span><code>ImportError: rclpy / sensor_msgs / visualization_msgs could not be imported.
+</code></pre></div>
+<p>You are trying to instantiate <code>ROS2Publisher</code> outside the ROS2 Docker
+environment.  Use the Foxglove back-end instead, or start the Docker container
+as described in steps 1-2 above.</p>
+<p><strong>rviz2 shows no robot</strong></p>
+<p>Check that <code>robot_state_publisher</code> is running (step 4) and has loaded the URDF.
+Run <code>ros2 topic echo /joint_states</code> to confirm the experiment is publishing.
+In rviz2, verify the <em>Fixed Frame</em> is set to <code>world</code>.</p>
+<p><strong>rviz2 does not appear (macOS / no display)</strong></p>
+<p>Ensure XQuartz is running and <code>xhost +localhost</code> has been run before starting
+the container.  Check <code>echo $DISPLAY</code> inside the container; it should be
+<code>host.docker.internal:0</code> or similar.</p>
+<p><strong>TF tree looks wrong</strong></p>
+<p>Confirm the URDF path in the <code>robot_state_publisher</code> command (step 4) points to
+<code>urdf/buddy_jr.urdf</code> inside the container (i.e. <code>/workspace/urdf/buddy_jr.urdf</code>).
+The URDF is the single source of truth: if the file path is wrong, TF will be
+silent and the arm will not render.</p>
+<hr />
+<h2 id="why-not-install-ros2-natively-on-macos">Why not install ROS2 natively on macOS?<a class="headerlink" href="#why-not-install-ros2-natively-on-macos" title="Permanent link">&para;</a></h2>
+<p>ROS2 has no official macOS arm64 (Apple Silicon) support.  A source build
+requires patching several C++ dependencies, is broken by routine Xcode and
+Homebrew updates, and is not tested by the ROS2 project.  Even when it works,
+the result is fragile and frequently breaks after <code>brew upgrade</code>.</p>
+<p>The Docker path is faster to set up, reproducible across machines, and matches
+the environment the lab's CI tests against.  It also teaches good habits: in
+real robotics projects, the robot's software runs in a controlled Linux
+environment regardless of the developer's host OS.</p>
+<p>All rl_lab Python packages — including <code>rl_lab.viz.rviz.ros2_publisher</code> — import
+cleanly on macOS without rclpy installed because all ROS2 imports are lazy
+(inside <code>__init__</code>, not at module level).  Only <em>instantiating</em> <code>ROS2Publisher</code>
+with <code>render_mode="ros2"</code> raises <code>ImportError</code> outside the container.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2337 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Learn reinforcement learning on a 4-DOF robot arm — sim to real.">
+      
+      
+      
+        <link rel="canonical" href="https://kevinmcaleer.github.io/rl_lab/experiments/05_dqn/">
+      
+      
+        <link rel="prev" href="../04_reward_shaping/">
+      
+      
+        <link rel="next" href="../06_generalisation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>05 · DQN - Buddy Jr RL Lab</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#experiment-05-dqn-replace-the-table-with-a-network" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-header__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Buddy Jr RL Lab
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              05 · DQN
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-nav__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Buddy Jr RL Lab
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation_macos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install on macOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/foxglove_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foxglove setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation_ros2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 (advanced)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting / FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/reward_design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reward design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/exploration_vs_exploitation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exploration vs exploitation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/on_vs_off_policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    On- vs off-policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/value_vs_policy_methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Value vs policy methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/terminated_vs_truncated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminated vs truncated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The robot
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The robot
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/kinematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kinematics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/frames/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiring & power
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Experiments
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_bandit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Bandit base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Build the world
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_qlearning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Tabular Q-learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_reward_shaping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Reward shaping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · DQN
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · DQN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem-we-solved-last-time-and-why-it-broke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem we solved last time — and why it broke
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-key-idea-a-network-generalises-across-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The key idea: a network generalises across states
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-stabilising-tricks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two stabilising tricks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The two stabilising tricks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-experience-replay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1 — Experience replay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-target-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2 — Target network
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ablation-watch-both-tricks-fail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ablation: watch both tricks fail
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-training-50-000-steps-per-condition-saves-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full training (≈ 50 000 steps per condition, saves plots)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-smoke-test-ci-mode-a-few-seconds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick smoke-test (CI mode, a few seconds)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#live-3d-visualisation-in-foxglove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live 3D visualisation in Foxglove
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-watch-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to watch for
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What to watch for">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-saved-plot-experiments_outputs05_dqnlearning_curvespng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the saved plot (experiments/_outputs/05_dqn/learning_curves.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-foxglove-if-render-foxglove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In Foxglove (if --render foxglove)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aha-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aha takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concept-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept connections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code pointers
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_generalisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Generalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_reinforce/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · REINFORCE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_ppo_continuous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Continuous PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_sac_aim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · SAC + aim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_robustify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11 · Sim-to-real gap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12 · Deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & release
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design & release
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-problem-we-solved-last-time-and-why-it-broke" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The problem we solved last time — and why it broke
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-key-idea-a-network-generalises-across-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The key idea: a network generalises across states
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-two-stabilising-tricks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The two stabilising tricks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The two stabilising tricks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-experience-replay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1 — Experience replay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-target-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2 — Target network
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-ablation-watch-both-tricks-fail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The ablation: watch both tricks fail
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-training-50-000-steps-per-condition-saves-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full training (≈ 50 000 steps per condition, saves plots)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-smoke-test-ci-mode-a-few-seconds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick smoke-test (CI mode, a few seconds)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#live-3d-visualisation-in-foxglove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live 3D visualisation in Foxglove
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-watch-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to watch for
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What to watch for">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-the-saved-plot-experiments_outputs05_dqnlearning_curvespng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In the saved plot (experiments/_outputs/05_dqn/learning_curves.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#in-foxglove-if-render-foxglove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In Foxglove (if --render foxglove)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aha-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aha takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concept-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept connections
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code pointers
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="experiment-05-dqn-replace-the-table-with-a-network">Experiment 05 — DQN: Replace the Table with a Network<a class="headerlink" href="#experiment-05-dqn-replace-the-table-with-a-network" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Concept</strong></td>
+<td>Function approximation · experience replay · target network</td>
+</tr>
+<tr>
+<td><strong>Env</strong></td>
+<td><code>BuddyJrReachDiscrete-v0</code>  (obs <code>Box(17,)</code>, action <code>Discrete(9)</code>)</td>
+</tr>
+<tr>
+<td><strong>Algorithm</strong></td>
+<td>From-scratch DQN (<code>rl_lab.algos.value_based.dqn.DQN</code>)</td>
+</tr>
+<tr>
+<td><strong>Script</strong></td>
+<td><code>experiments/05_dqn.py</code></td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td><code>experiments/_outputs/05_dqn/learning_curves.png</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-problem-we-solved-last-time-and-why-it-broke">The problem we solved last time — and why it broke<a class="headerlink" href="#the-problem-we-solved-last-time-and-why-it-broke" title="Permanent link">&para;</a></h2>
+<p>In Experiment 04 you ran tabular Q-learning with higher resolution (more bins)
+and unlocked the fourth joint. The Q-table exploded in size — millions of cells,
+almost none of them ever visited. Training stalled not because the algorithm was
+wrong but because <em>you can't store one value per state when there are infinitely
+many states</em>.</p>
+<p>That is the <strong>curse of dimensionality</strong>, and it is the exact wall that led
+researchers to replace tables with neural networks.</p>
+<hr />
+<h2 id="the-key-idea-a-network-generalises-across-states">The key idea: a network <em>generalises</em> across states<a class="headerlink" href="#the-key-idea-a-network-generalises-across-states" title="Permanent link">&para;</a></h2>
+<p>A Q-table maps <strong>each discrete state</strong> to Q-values independently — it learns
+nothing about neighbouring states. A neural network instead learns a <em>function</em>
+<code>Q(s, a; θ)</code> that <strong>shares parameters across all states</strong>. Once it has seen a
+state near the goal, it can infer the Q-value of a similar nearby state it has
+never visited, because the function is smooth.</p>
+<p>This is called <strong>function approximation</strong>: we approximate the true Q-function
+with a parameterised model (here, a small MLP) instead of a table.</p>
+<p>The Q-network for <code>BuddyJrReachDiscrete-v0</code> has:</p>
+<ul>
+<li><strong>Input layer</strong>: 17 neurons (the full obs vector — 4 joint angles + 4
+  velocities + 3 ee pos + 3 target pos + 3 tip-to-target vector)</li>
+<li><strong>Two hidden layers</strong>: 64 ReLU neurons each</li>
+<li><strong>Output layer</strong>: 9 linear neurons, one per discrete action (±jog on each
+  joint, plus a no-op)</li>
+</ul>
+<p>The training rule is identical to Q-learning:</p>
+<div class="highlight"><pre><span></span><code>target  y = r + γ · max_a&#39; Q_target(s&#39;, a&#39;) · (1 - done)
+loss    L = ( Q_online(s, a) − y )²        MSE over a minibatch
+</code></pre></div>
+<p>But because the network generalises, this regression has to be handled
+carefully. Two tricks are essential.</p>
+<hr />
+<h2 id="the-two-stabilising-tricks">The two stabilising tricks<a class="headerlink" href="#the-two-stabilising-tricks" title="Permanent link">&para;</a></h2>
+<h3 id="1-experience-replay">1 — Experience replay<a class="headerlink" href="#1-experience-replay" title="Permanent link">&para;</a></h3>
+<p>Consecutive environment steps are <strong>highly correlated</strong>: step <em>t</em> and step
+<em>t+1</em> share the same episode, similar joint angles, and strongly related
+observations. Gradient descent assumes data is approximately i.i.d.; training on
+correlated pairs causes the gradient to point in a systematically biased
+direction and the network can oscillate or diverge.</p>
+<p><strong>The fix:</strong> store every transition <code>(s, a, r, s', done)</code> in a <strong>ring buffer</strong>
+(the <em>replay buffer</em>) and train on a <strong>random minibatch</strong> drawn from it. Random
+sampling breaks the correlation. It also lets each transition contribute to
+<em>multiple</em> gradient updates — expensive experience is reused.</p>
+<div class="highlight"><pre><span></span><code>Replay buffer (ring buffer, capacity = 50 000 transitions)
+┌──────────────────────────────────────────────────────────┐
+│  (s₀, a₀, r₀, s₁, d₀)   ← oldest (overwritten when full)│
+│  (s₁, a₁, r₁, s₂, d₁)                                   │
+│   …                                                      │
+│  (sₙ, aₙ, rₙ, sₙ₊₁, dₙ) ← most recent                  │
+└──────────────────────────────────────────────────────────┘
+        ↓  sample 64 uniformly at random each gradient step
+        →  decorrelated minibatch → stable gradient estimate
+</code></pre></div>
+<h3 id="2-target-network">2 — Target network<a class="headerlink" href="#2-target-network" title="Permanent link">&para;</a></h3>
+<p>If we compute the bootstrap target <code>y = r + γ max_a' Q(s', a')</code> using the
+<em>same</em> network we are updating, the regression target moves every gradient step.
+We are literally chasing a goal that shifts each time we take a step toward it —
+like trying to hit a moving target. This often leads to oscillation or
+divergence.</p>
+<p><strong>The fix:</strong> maintain a <strong>second copy</strong> of the Q-network (<code>Q_target</code>) whose
+weights are frozen and synced to the online network only every <code>target_sync</code>
+gradient steps (500 in the healthy run). The target computed against <code>Q_target</code>
+is stable for 500 steps at a time, giving the regression something solid to
+converge toward.</p>
+<hr />
+<h2 id="the-ablation-watch-both-tricks-fail">The ablation: watch both tricks fail<a class="headerlink" href="#the-ablation-watch-both-tricks-fail" title="Permanent link">&para;</a></h2>
+<p><code>experiments/05_dqn.py</code> trains <strong>two</strong> DQN agents back-to-back:</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th><code>buffer_size</code></th>
+<th><code>target_sync</code></th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Healthy</strong></td>
+<td>50 000</td>
+<td>500</td>
+<td>Both tricks active → stable, rising curve</td>
+</tr>
+<tr>
+<td><strong>Collapsed</strong></td>
+<td>256</td>
+<td>1</td>
+<td>Both tricks broken → oscillating / flat curve</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>collapsed</strong> condition breaks both tricks at once:</p>
+<ul>
+<li>A buffer of 256 holds only ~1–2 episodes of transitions. Random sampling from
+  it still draws from a highly correlated window — effectively the same as
+  learning directly from the last few steps.</li>
+<li><code>target_sync=1</code> syncs the target every gradient step, meaning <code>Q_target</code> and
+  <code>Q_online</code> are always identical. There is no stable target to regress toward.</li>
+</ul>
+<p>The resulting learning curve either oscillates wildly or collapses flat —
+instability you can <em>see</em> rather than just read about.</p>
+<hr />
+<h2 id="how-to-run">How to run<a class="headerlink" href="#how-to-run" title="Permanent link">&para;</a></h2>
+<h3 id="full-training-50-000-steps-per-condition-saves-plots">Full training (≈ 50 000 steps per condition, saves plots)<a class="headerlink" href="#full-training-50-000-steps-per-condition-saves-plots" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/05_dqn.py
+</code></pre></div>
+<p>Expected wall-clock time: <strong>2–5 minutes</strong> on Apple Silicon M-series (CPU-only).</p>
+<h3 id="quick-smoke-test-ci-mode-a-few-seconds">Quick smoke-test (CI mode, a few seconds)<a class="headerlink" href="#quick-smoke-test-ci-mode-a-few-seconds" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/05_dqn.py<span class="w"> </span>--quick
+</code></pre></div>
+<p>Useful to confirm the script is importable and runs without errors before a
+long training session.</p>
+<h3 id="live-3d-visualisation-in-foxglove">Live 3D visualisation in Foxglove<a class="headerlink" href="#live-3d-visualisation-in-foxglove" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Start the Foxglove desktop app, then:</span>
+python<span class="w"> </span>experiments/05_dqn.py<span class="w"> </span>--render<span class="w"> </span>foxglove
+</code></pre></div>
+<p>After training completes the healthy DQN's greedy policy runs 5 rollouts
+streamed live to Foxglove:</p>
+<ul>
+<li>The 3D arm moves in real time.</li>
+<li>The goal sphere turns green when the tip is within tolerance.</li>
+<li>The tip-to-target line shrinks as the policy improves.</li>
+<li>Live metrics (distance, reward, success rate) appear in the data panel.</li>
+</ul>
+<p>Connect Foxglove to <code>ws://localhost:8765</code> (the default Foxglove WebSocket port).</p>
+<h3 id="additional-flags">Additional flags<a class="headerlink" href="#additional-flags" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>--seed N      reproducible run with seed N (default: 0)
+--no-plot     skip saving the matplotlib figure
+</code></pre></div>
+<hr />
+<h2 id="what-to-watch-for">What to watch for<a class="headerlink" href="#what-to-watch-for" title="Permanent link">&para;</a></h2>
+<h3 id="in-the-saved-plot-experiments_outputs05_dqnlearning_curvespng">In the saved plot (<code>experiments/_outputs/05_dqn/learning_curves.png</code>)<a class="headerlink" href="#in-the-saved-plot-experiments_outputs05_dqnlearning_curvespng" title="Permanent link">&para;</a></h3>
+<p>The figure has two panels:</p>
+<p><strong>Left — Episode Return (smoothed)</strong>
+The healthy (blue) curve rises steadily over 50 000 steps. The collapsed (red)
+curve stays low, oscillates, or temporarily rises then collapses. The gap
+between blue and red is the combined value of the two stabilising tricks.</p>
+<p><strong>Right — Success Rate %</strong>
+The healthy agent's success rate climbs toward a reliable non-zero value. The
+collapsed agent stays near zero or fluctuates with no clear upward trend. A
+"success" means the camera tip reached within 2 cm of the target in a single
+episode.</p>
+<h3 id="in-foxglove-if-render-foxglove">In Foxglove (if <code>--render foxglove</code>)<a class="headerlink" href="#in-foxglove-if-render-foxglove" title="Permanent link">&para;</a></h3>
+<p>After training, 5 greedy episodes play out live. You should see the arm:</p>
+<ol>
+<li>Start from a random configuration (joints noisy around a resting pose).</li>
+<li>Jog its joints in deliberate increments rather than randomly flailing.</li>
+<li>Drive the tip progressively closer to the goal (watch the line shrink).</li>
+<li>Sometimes reach the goal and terminate early (the greedy policy can succeed
+   even before the full 200-step budget is used).</li>
+</ol>
+<p>If the arm still seems fairly random by the end of a 50 000-step run it is
+likely because the task is hard under a discrete action space — see the <em>Next
+steps</em> section.</p>
+<hr />
+<h2 id="aha-takeaway">Aha takeaway<a class="headerlink" href="#aha-takeaway" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><em>A neural network can represent Q-values for infinitely many states — but only
+if you decorrelate the training data (replay buffer) and stabilise the
+regression target (target network). Remove either trick and the learning curve
+collapses.</em></p>
+</blockquote>
+<p><strong>Now you understand:</strong></p>
+<ul>
+<li><strong>Function approximation</strong> — why neural networks replace tables.</li>
+<li><strong>Experience replay</strong> — how a ring buffer breaks temporal correlations.</li>
+<li><strong>Target networks</strong> — how a frozen copy prevents chasing a moving goal.</li>
+<li><strong>Why "deep" Q-learning needs special care</strong> — gradient descent on RL data is
+  fragile, and the two tricks above are the minimal patch.</li>
+</ul>
+<p>These are the ideas that made DeepMind's 2015 Atari paper work (Mnih et al.,
+<em>Human-level control through deep reinforcement learning</em>, Nature 2015) and that
+every subsequent deep value-based algorithm builds on.</p>
+<hr />
+<h2 id="concept-connections">Concept connections<a class="headerlink" href="#concept-connections" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>First introduced</th>
+<th>This experiment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q-values / Bellman update</td>
+<td>Exp 03</td>
+<td>Now approximated by a neural network</td>
+</tr>
+<tr>
+<td>Curse of dimensionality</td>
+<td>Exp 04</td>
+<td>Solved by function approximation</td>
+</tr>
+<tr>
+<td>Replay buffer</td>
+<td><strong>Exp 05</strong></td>
+<td>Breaks temporal correlation</td>
+</tr>
+<tr>
+<td>Target network</td>
+<td><strong>Exp 05</strong></td>
+<td>Stabilises the regression target</td>
+</tr>
+<tr>
+<td>Generalisation / moving targets</td>
+<td>Exp 06</td>
+<td>Next: what happens when the goal moves</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="next-steps">Next steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<p>Once you understand the healthy vs. collapsed contrast, try these self-directed
+experiments by editing <code>experiments/05_dqn.py</code>:</p>
+<ol>
+<li><strong>Find the buffer threshold.</strong> Try <code>buffer_size</code> values of 512, 1 024, 4 096,
+   16 384. At what size does the collapse disappear?</li>
+<li><strong>Find the target-sync threshold.</strong> Keep <code>buffer_size=50_000</code> fixed and sweep
+   <code>target_sync</code> in {1, 10, 50, 200, 1000}. How infrequent does syncing need to
+   be to stay stable?</li>
+<li><strong>Turn off only one trick at a time.</strong> Use <code>buffer_size=256, target_sync=500</code>
+   (broken replay only) and then <code>buffer_size=50_000, target_sync=1</code> (broken
+   target only). Which trick matters more for this environment?</li>
+<li><strong>Add Huber loss.</strong> Replace the MSE loss in
+   <code>rl_lab/algos/value_based/dqn.py</code> with <code>torch.nn.HuberLoss()</code>. Does it
+   reduce the wild spikes in the collapsed curve?</li>
+<li><strong>Move to Experiment 06</strong> — use the same healthy DQN but change <code>reset()</code> to
+   randomise the target position every episode. Does the policy generalise?</li>
+</ol>
+<hr />
+<h2 id="code-pointers">Code pointers<a class="headerlink" href="#code-pointers" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What to look at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rl_lab/algos/value_based/dqn.py</code></td>
+<td><code>ReplayBuffer</code>, <code>QNetwork</code>, <code>DQN._learn()</code></td>
+</tr>
+<tr>
+<td><code>rl_lab/algos/registry.py</code></td>
+<td><code>make_algorithm("dqn", env, ...)</code></td>
+</tr>
+<tr>
+<td><code>rl_lab/env/registration.py</code></td>
+<td><code>BuddyJrReachDiscrete-v0</code> registration</td>
+</tr>
+<tr>
+<td><code>rl_lab/env/wrappers.py</code></td>
+<td><code>DiscretizeBuddyJr</code> — how 9 discrete actions map to joint jogs</td>
+</tr>
+<tr>
+<td><code>rl_lab/viz/foxglove_bridge.py</code></td>
+<td><code>FoxgloveStreamer.publish(...)</code> — live 3D streaming</td>
+</tr>
+<tr>
+<td><code>experiments/05_dqn.py</code></td>
+<td><code>_train_condition()</code>, <code>run()</code>, <code>main()</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<!-- nav-footer -->
+<p>← Previous: <a href="../04_reward_shaping/">Reward shaping</a> &nbsp;|&nbsp; <a href="../">All experiments</a> &nbsp;|&nbsp; Next: <a href="../06_generalisation/">Generalisation</a> →</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2399 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Learn reinforcement learning on a 4-DOF robot arm — sim to real.">
+      
+      
+      
+        <link rel="canonical" href="https://kevinmcaleer.github.io/rl_lab/experiments/06_generalisation/">
+      
+      
+        <link rel="prev" href="../05_dqn/">
+      
+      
+        <link rel="next" href="../07_reinforce/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>06 · Generalisation - Buddy Jr RL Lab</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#experiment-06-generalisation-domain-randomisation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-header__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Buddy Jr RL Lab
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              06 · Generalisation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-nav__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Buddy Jr RL Lab
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation_macos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install on macOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/foxglove_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foxglove setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation_ros2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 (advanced)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting / FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/reward_design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reward design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/exploration_vs_exploitation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exploration vs exploitation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/on_vs_off_policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    On- vs off-policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/value_vs_policy_methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Value vs policy methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/terminated_vs_truncated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminated vs truncated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The robot
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The robot
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/kinematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kinematics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/frames/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiring & power
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Experiments
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_bandit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Bandit base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Build the world
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_qlearning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Tabular Q-learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_reward_shaping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Reward shaping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_dqn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · DQN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Generalisation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Generalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core question
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-this-experiment-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this experiment does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#domain-randomisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain randomisation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-look-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to look for
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What to look for">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#learning-curves-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning curves (training)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generalisation-bar-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generalisation bar chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-episode-scatter-plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-episode scatter plot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foxglove-live-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Foxglove (live comparison)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#minimal-terminal-only-no-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimal (terminal only, no viewer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-live-3-d-visualisation-foxglove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With live 3-D visualisation (Foxglove)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-smoke-test-ci-low-resource-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick smoke-test (CI / low-resource machine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-option-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full option reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typical-output-full-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical output (full run)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saved-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saved plots
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-observation-design-lesson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The observation design lesson
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-to-sim-to-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection to sim-to-real
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aha-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aha takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files-involved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files involved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_reinforce/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · REINFORCE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_ppo_continuous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Continuous PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_sac_aim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · SAC + aim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_robustify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11 · Sim-to-real gap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12 · Deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & release
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design & release
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-question" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core question
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-this-experiment-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this experiment does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#domain-randomisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Domain randomisation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-to-look-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What to look for
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What to look for">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#learning-curves-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning curves (training)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generalisation-bar-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generalisation bar chart
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-episode-scatter-plot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-episode scatter plot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foxglove-live-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Foxglove (live comparison)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#minimal-terminal-only-no-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimal (terminal only, no viewer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-live-3-d-visualisation-foxglove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With live 3-D visualisation (Foxglove)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-smoke-test-ci-low-resource-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick smoke-test (CI / low-resource machine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-option-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full option reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typical-output-full-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical output (full run)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#saved-plots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saved plots
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-observation-design-lesson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The observation design lesson
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connection-to-sim-to-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connection to sim-to-real
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aha-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aha takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files-involved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files involved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="experiment-06-generalisation-domain-randomisation">Experiment 06 — Generalisation &amp; Domain Randomisation<a class="headerlink" href="#experiment-06-generalisation-domain-randomisation" title="Permanent link">&para;</a></h1>
+<p><strong>Concept:</strong> An agent can <em>memorise</em> a solution or <em>learn the task</em>. These two look
+the same during training, but diverge the moment you move the target somewhere new.
+Domain randomisation — varying the task during training — is the primary tool that
+forces genuine learning and is your first concrete step toward sim-to-real transfer.</p>
+<hr />
+<h2 id="the-core-question">The core question<a class="headerlink" href="#the-core-question" title="Permanent link">&para;</a></h2>
+<p>Take the DQN agent from Experiment 05 and ask: <strong>what did it actually learn?</strong></p>
+<p>There are two possibilities:</p>
+<ol>
+<li>
+<p><strong>Memorisation</strong> — it learned a fixed trajectory: "always move joints like <em>this</em>
+   to reach <em>that one specific point</em>". Perfect score during training; zero score
+   anywhere else.</p>
+</li>
+<li>
+<p><strong>Generalisation</strong> — it learned the task: "look at the tip-to-target vector in
+   the observation, and choose the action that shrinks it". Works on any target,
+   because the policy conditions on the target position.</p>
+</li>
+</ol>
+<p>You cannot tell the difference by watching training metrics alone. The only honest
+test is evaluation on <strong>targets the agent never saw during training</strong> — the
+<em>generalisation evaluation</em>.</p>
+<p>The difference in success rate between training targets and unseen targets is the
+<strong>generalisation gap</strong>. A large gap means memorisation; a small gap means the agent
+actually learned the task.</p>
+<hr />
+<h2 id="what-this-experiment-does">What this experiment does<a class="headerlink" href="#what-this-experiment-does" title="Permanent link">&para;</a></h2>
+<p>The script trains two DQN agents side by side:</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>What changes each episode</th>
+<th>What the agent must learn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Fixed target</strong></td>
+<td>Nothing — the target stays at the same point forever</td>
+<td>A single hard-coded trajectory</td>
+</tr>
+<tr>
+<td><strong>Random target</strong></td>
+<td>The target is re-sampled at a random reachable position</td>
+<td>A general reaching policy driven by the observation</td>
+</tr>
+</tbody>
+</table>
+<p>Both agents see the same observation space (including <code>obs[14:17]</code> = normalised
+tip-to-target vector) and the same DQN hyperparameters. The only difference is
+whether the target moves.</p>
+<p>After training, <strong>both agents</strong> are evaluated on the same set of randomly sampled
+unseen targets (a fresh set, with a different seed). This reveals the generalisation
+gap without any ambiguity.</p>
+<hr />
+<h2 id="domain-randomisation">Domain randomisation<a class="headerlink" href="#domain-randomisation" title="Permanent link">&para;</a></h2>
+<p>Randomising the target position is the simplest form of <strong>domain randomisation</strong> —
+deliberately injecting variation at training time so the policy is forced to learn a
+general strategy rather than a memorised one.</p>
+<p>The same principle applies to:</p>
+<ul>
+<li>Target position (this experiment)</li>
+<li>Link lengths and masses (Experiment 11 adds servo jitter and control latency)</li>
+<li>Sensor noise and observation perturbations</li>
+<li>Action delays and servo slew limits</li>
+</ul>
+<p>The intuition is: <em>if you train on many variations of a task, your policy must
+generalise across them. At test time — including on the real robot — you encounter
+a new variation it has not seen. If the training distribution was wide enough, the
+policy handles it.</em></p>
+<p>This is why domain randomisation is called "the first sim-to-real bridge": before
+you worry about the camera, the lighting, the servo dead-band, or the link
+flexibility of the real arm, you first ensure the policy can handle a different
+<em>target position</em>. If it cannot handle that, it cannot handle anything real.</p>
+<hr />
+<h2 id="what-to-look-for">What to look for<a class="headerlink" href="#what-to-look-for" title="Permanent link">&para;</a></h2>
+<h3 id="learning-curves-training">Learning curves (training)<a class="headerlink" href="#learning-curves-training" title="Permanent link">&para;</a></h3>
+<p>Both agents will reach a high training success rate. This is expected — the fixed
+agent has an easy job (memorise one trajectory), and the random agent has a harder
+job but a denser signal (every episode teaches something about the geometry of the
+reaching task).</p>
+<p>Watch whether:</p>
+<ul>
+<li>The fixed agent's learning curve rises faster (likely — its problem is simpler).</li>
+<li>The random agent's curve is noisier early on but may eventually match or exceed
+  the fixed agent's training success rate.</li>
+</ul>
+<blockquote>
+<p>The learning curves look similar. The real test is what happens next.</p>
+</blockquote>
+<h3 id="generalisation-bar-chart">Generalisation bar chart<a class="headerlink" href="#generalisation-bar-chart" title="Permanent link">&para;</a></h3>
+<p>This is the key plot: success rate on <strong>unseen</strong> targets, one bar per agent.</p>
+<p>The expected result after 40,000 training steps:</p>
+<ul>
+<li><strong>Fixed-target agent</strong>: low or near-zero success on unseen targets. It learned
+  to reach <em>one point</em> and the policy has no information to use when the target is
+  somewhere different.</li>
+<li><strong>Random-target agent</strong>: substantially higher success on unseen targets. It
+  learned that <code>obs[14:17]</code> is the direction to the goal, and that shrinking it is
+  the task.</li>
+</ul>
+<p>The <strong>generalisation gap</strong> (random success − fixed success) is the headline metric.
+A gap of +30 % or more is a clear demonstration of the concept; on a full 40,000
+step run you should see 50 % or more.</p>
+<h3 id="per-episode-scatter-plot">Per-episode scatter plot<a class="headerlink" href="#per-episode-scatter-plot" title="Permanent link">&para;</a></h3>
+<p>Each dot is one evaluation episode. You will see:</p>
+<ul>
+<li><strong>Orange dots (fixed agent)</strong>: scattered high on the distance axis, with little
+  variation — the agent applies the same wrong motion pattern regardless of where
+  the target is.</li>
+<li><strong>Blue dots (random agent)</strong>: tightly clustered near the red success threshold
+  (2 cm) on many episodes, with occasional failures when the target is in an
+  especially awkward part of the workspace.</li>
+</ul>
+<h3 id="foxglove-live-comparison">Foxglove (live comparison)<a class="headerlink" href="#foxglove-live-comparison" title="Permanent link">&para;</a></h3>
+<p>With <code>--render foxglove</code> the script streams both agents in sequence to Foxglove
+after training. Open Foxglove Studio, connect to <code>ws://localhost:8765</code>, and watch:</p>
+<ol>
+<li><strong>Fixed-target agent</strong>: the arm moves to the same position every episode,
+   regardless of where the green target sphere is. The arm "ignores" the target
+   completely after it was trained.</li>
+<li><strong>Random-target agent</strong>: the arm moves <em>toward</em> the target sphere, tracking
+   wherever it appears. Each episode the arm finds a different path to a different
+   goal.</li>
+</ol>
+<p>The target sphere colour changes from red to green when the tip is within 2 cm.
+The fixed agent's sphere almost never turns green on an unseen target; the random
+agent's sphere turns green frequently.</p>
+<hr />
+<h2 id="how-to-run">How to run<a class="headerlink" href="#how-to-run" title="Permanent link">&para;</a></h2>
+<h3 id="minimal-terminal-only-no-viewer">Minimal (terminal only, no viewer)<a class="headerlink" href="#minimal-terminal-only-no-viewer" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/06_generalisation.py
+</code></pre></div>
+<p>This trains both agents for 40,000 steps each, evaluates on 50 unseen targets, and
+saves three plots to <code>experiments/_outputs/06_generalisation/</code>.</p>
+<h3 id="with-live-3-d-visualisation-foxglove">With live 3-D visualisation (Foxglove)<a class="headerlink" href="#with-live-3-d-visualisation-foxglove" title="Permanent link">&para;</a></h3>
+<p>Start the Foxglove desktop app, create a connection to <code>ws://localhost:8765</code>, and:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/06_generalisation.py<span class="w"> </span>--render<span class="w"> </span>foxglove
+</code></pre></div>
+<p>Both agents are streamed to Foxglove in sequence after training — first the fixed
+agent, then the random agent — so you can compare them directly.</p>
+<p>For Foxglove setup details see
+<a href="../../getting_started/foxglove_setup/"><code>docs/getting_started/foxglove_setup.md</code></a>.</p>
+<h3 id="quick-smoke-test-ci-low-resource-machine">Quick smoke-test (CI / low-resource machine)<a class="headerlink" href="#quick-smoke-test-ci-low-resource-machine" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/06_generalisation.py<span class="w"> </span>--quick
+</code></pre></div>
+<p>Uses a tiny training budget (600 steps per agent, 5 evaluation episodes) and
+finishes in a few seconds on CPU. No plots, no Foxglove. The generalisation gap
+may not be large at this budget, but the script runs cleanly end-to-end.</p>
+<h3 id="full-option-reference">Full option reference<a class="headerlink" href="#full-option-reference" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>usage: 06_generalisation [--quick] [--render {foxglove}] [--seed INT] [--no-plot]
+
+  --quick              Tiny budget; finish in seconds (CI mode).
+  --render foxglove    Stream live to Foxglove after training.
+  --seed INT           Master random seed (default: 0).
+  --no-plot            Skip saving the matplotlib plots (useful for quick checks).
+</code></pre></div>
+<h3 id="typical-output-full-run">Typical output (full run)<a class="headerlink" href="#typical-output-full-run" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>=================================================================
+Experiment 06 — Generalisation &amp; Domain Randomisation
+=================================================================
+  quick=False  train_steps=40,000  eval_episodes=50  seed=0
+
+--- Training: FIXED target (memorisation) (40,000 steps, seed=0) ---
+    Training done in 45.2 s — 3814 episodes logged.
+
+--- Training: RANDOM target (generalisation) (40,000 steps, seed=1) ---
+    Training done in 47.8 s — 2903 episodes logged.
+
+Evaluating both agents on 50 UNSEEN random targets …
+
+───────────────────────────────────────────────────────
+RESULTS (unseen targets)
+───────────────────────────────────────────────────────
+  Fixed-target agent  — success: 6%    mean dist: 8.3 cm
+  Random-target agent — success: 62%   mean dist: 2.1 cm
+  Generalisation gap  (+random − fixed): +56%
+───────────────────────────────────────────────────────
+  &gt; The random-target agent generalises better to unseen targets.
+  &gt; The fixed-target agent memorised ONE trajectory — it has no
+    general reaching policy.
+
+Saving plots …
+    Saved: experiments/_outputs/06_generalisation/learning_curves.png
+    Saved: experiments/_outputs/06_generalisation/generalisation_gap.png
+    Saved: experiments/_outputs/06_generalisation/per_episode_distances.png
+
+Done. gap=+56%  fixed=6%  random=62%
+</code></pre></div>
+<hr />
+<h2 id="saved-plots">Saved plots<a class="headerlink" href="#saved-plots" title="Permanent link">&para;</a></h2>
+<p>Three plots are written to <code>experiments/_outputs/06_generalisation/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>learning_curves.png</code></td>
+<td>Per-episode rolling success rate (100-episode window) during training, for both agents.</td>
+</tr>
+<tr>
+<td><code>generalisation_gap.png</code></td>
+<td>Bar chart: success rate and mean final distance on unseen targets for both agents. The generalisation gap is shown in the subtitle.</td>
+</tr>
+<tr>
+<td><code>per_episode_distances.png</code></td>
+<td>Scatter: per-episode final tip-to-target distance for all evaluation episodes. The red dashed line marks the 2 cm success threshold.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="the-observation-design-lesson">The observation design lesson<a class="headerlink" href="#the-observation-design-lesson" title="Permanent link">&para;</a></h2>
+<p>Look at <code>rl_lab/env/spaces.py</code> (specifically <code>build_observation</code>). The last three
+elements of the 17-D observation vector are:</p>
+<div class="highlight"><pre><span></span><code>obs[14:17] = (target_pos - ee_pos) * POS_SCALE   # normalised tip→target vector
+</code></pre></div>
+<p>This is the key ingredient that makes the random-target agent possible. Without
+this vector in the observation, the agent would have no way to know where the
+target is — it would be forced to memorise trajectories rather than respond to the
+goal. With it, the agent can condition every action on the direction it needs to
+move, making genuine generalisation feasible.</p>
+<p>This is also why <strong>observation design is a first-class concern</strong> in RL. An
+observation that omits information the agent needs to solve the task <em>by
+definition</em> prevents generalisation. The agent can only be as general as its
+observation allows.</p>
+<hr />
+<h2 id="connection-to-sim-to-real">Connection to sim-to-real<a class="headerlink" href="#connection-to-sim-to-real" title="Permanent link">&para;</a></h2>
+<p>The fixed-target agent is an extreme illustration of a common failure mode in
+robotics RL: training on a single scenario (or a narrow scenario distribution) and
+expecting the policy to work on a real robot where nothing is quite the same.</p>
+<p>On the real Buddy Jr, the target position is determined by a camera detection
+pipeline — it is never in exactly the position the simulation used. If you trained
+on one fixed target in sim, the real-robot performance is unpredictable.</p>
+<p>The random-target agent is a first step toward robustness. Experiment 11 continues
+this theme with full domain randomisation: perturbing link lengths, adding servo
+jitter, introducing control latency, and injecting observation noise — all the
+sources of variation you would expect on real hardware.</p>
+<p>The mental model to carry forward:</p>
+<blockquote>
+<p><em>The distribution of targets (or perturbations) you train on is the distribution
+your policy can handle. Make your training distribution match (or exceed) the
+distribution you expect at deployment.</em></p>
+</blockquote>
+<hr />
+<h2 id="aha-takeaway">Aha takeaway<a class="headerlink" href="#aha-takeaway" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><em>Train on variety or you will only ever memorise one episode.</em></p>
+</blockquote>
+<p>After this experiment you know:</p>
+<ul>
+<li>The difference between memorisation and generalisation in RL, and how to measure
+  it (the generalisation gap on held-out targets).</li>
+<li>Why the target position must be in the observation for a general reaching policy
+  to be possible.</li>
+<li>What domain randomisation is: deliberately widening the training distribution to
+  force the policy to learn a general strategy.</li>
+<li>Why domain randomisation is the first practical step toward sim-to-real transfer.</li>
+</ul>
+<p><strong>Now you understand generalisation, observation design, and domain randomisation —
+your first concrete sim-to-real tool.</strong></p>
+<hr />
+<h2 id="files-involved">Files involved<a class="headerlink" href="#files-involved" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>experiments/06_generalisation.py</code></td>
+<td>The runnable experiment (this script).</td>
+</tr>
+<tr>
+<td><code>rl_lab/env/buddy_jr_reach_env.py</code></td>
+<td><code>BuddyJrReachEnv</code> — used as the base class for <code>_FixedTargetEnv</code>.</td>
+</tr>
+<tr>
+<td><code>rl_lab/env/wrappers.py</code></td>
+<td><code>DiscretizeBuddyJr</code> wrapper applied to the fixed-target env.</td>
+</tr>
+<tr>
+<td><code>rl_lab/env/spaces.py</code></td>
+<td><code>build_observation</code> — shows where <code>obs[14:17]</code> (tip→target vector) comes from.</td>
+</tr>
+<tr>
+<td><code>rl_lab/algos/value_based/dqn.py</code></td>
+<td><code>DQN</code> — the algorithm trained in this experiment.</td>
+</tr>
+<tr>
+<td><code>rl_lab/algos/registry.py</code></td>
+<td><code>make_algorithm("dqn", env)</code> factory.</td>
+</tr>
+<tr>
+<td><code>rl_lab/viz/foxglove_bridge.py</code></td>
+<td><code>FoxgloveStreamer</code> — live WebSocket publisher for the comparison hook.</td>
+</tr>
+<tr>
+<td><code>experiments/_outputs/06_generalisation/</code></td>
+<td>Output directory for saved plots.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="whats-next">What's next<a class="headerlink" href="#whats-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li>
+<p><strong>Experiment 07</strong> introduces REINFORCE — the simplest policy-gradient algorithm.
+  Unlike DQN (which learns a value function and derives a policy from it),
+  REINFORCE directly optimises the policy parameters. The generalisation lesson
+  from this experiment applies equally there: a policy that conditions on the
+  target position generalises; one trained on a fixed target memorises.</p>
+</li>
+<li>
+<p><strong>Experiment 11</strong> returns to domain randomisation with a full sim-to-real
+  hardening pass: servo noise, control latency, link-length perturbations, and
+  safety clamping — everything needed to give a trained policy a realistic chance
+  on the real Buddy Jr arm.</p>
+</li>
+</ul>
+<hr />
+<!-- nav-footer -->
+<p>← Previous: <a href="../05_dqn/">DQN</a> &nbsp;|&nbsp; <a href="../">All experiments</a> &nbsp;|&nbsp; Next: <a href="../07_reinforce/">REINFORCE</a> →</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

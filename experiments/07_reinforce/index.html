@@ -1,0 +1,2374 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Learn reinforcement learning on a 4-DOF robot arm — sim to real.">
+      
+      
+      
+        <link rel="canonical" href="https://kevinmcaleer.github.io/rl_lab/experiments/07_reinforce/">
+      
+      
+        <link rel="prev" href="../06_generalisation/">
+      
+      
+        <link rel="next" href="../08_ppo/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>07 · REINFORCE - Buddy Jr RL Lab</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#experiment-07-reinforce-from-scratch-policy-gradients-and-variance" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-header__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Buddy Jr RL Lab
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              07 · REINFORCE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Buddy Jr RL Lab" class="md-nav__button md-logo" aria-label="Buddy Jr RL Lab" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Buddy Jr RL Lab
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/kevinmcaleer/rl_lab" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    kevinmcaleer/rl_lab
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation_macos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install on macOS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/foxglove_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foxglove setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/installation_ros2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ROS2 (advanced)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting / FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/mdps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MDPs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/reward_design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reward design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/exploration_vs_exploitation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exploration vs exploitation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/on_vs_off_policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    On- vs off-policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/value_vs_policy_methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Value vs policy methods
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/terminated_vs_truncated/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminated vs truncated
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The robot
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The robot
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/urdf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    URDF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/kinematics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kinematics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/frames/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frames
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../robot/wiring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wiring & power
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Experiments
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Experiments
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_bandit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 · Bandit base
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02_world/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 · Build the world
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_qlearning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 · Tabular Q-learning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_reward_shaping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 · Reward shaping
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_dqn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 · DQN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_generalisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 · Generalisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · REINFORCE
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 · REINFORCE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-mathematics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The mathematics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The mathematics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-score-function-gradient-estimator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The score-function gradient estimator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-variance-problem-and-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The variance problem and baselines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The variance problem and baselines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-raw-reinforce-is-noisy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why raw REINFORCE is noisy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-baseline-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The baseline fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-experiment-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the experiment runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-run-recommended-the-first-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full run (recommended the first time)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-foxglove-live-3d-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Foxglove (live 3D viewer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-ci-smoke-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick / CI smoke test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expected results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#learning-curves-learning_curvespng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning curves (learning_curves.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advantage-variance-advantage_variancepng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advantage variance (advantage_variance.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-rate-deliberateness-success_ratepng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success rate / deliberateness (success_rate.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#console-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Console output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code highlights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aha-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aha takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_ppo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 · PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_ppo_continuous/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 · Continuous PPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_sac_aim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 · SAC + aim
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_robustify/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11 · Sim-to-real gap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_deploy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12 · Deploy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design & release
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design & release
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../releasing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concept
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-mathematics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The mathematics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The mathematics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-score-function-gradient-estimator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The score-function gradient estimator
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-variance-problem-and-baselines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The variance problem and baselines
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The variance problem and baselines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-raw-reinforce-is-noisy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why raw REINFORCE is noisy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-baseline-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The baseline fix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-the-experiment-runs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What the experiment runs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to run
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to run">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#full-run-recommended-the-first-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full run (recommended the first time)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-foxglove-live-3d-viewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        With Foxglove (live 3D viewer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-ci-smoke-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick / CI smoke test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expected results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#learning-curves-learning_curvespng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Learning curves (learning_curves.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advantage-variance-advantage_variancepng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advantage variance (advantage_variance.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-rate-deliberateness-success_ratepng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success rate / deliberateness (success_rate.png)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#console-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Console output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code highlights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aha-takeaway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aha takeaway
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="experiment-07-reinforce-from-scratch-policy-gradients-and-variance">Experiment 07 — REINFORCE from Scratch: Policy Gradients and Variance<a class="headerlink" href="#experiment-07-reinforce-from-scratch-policy-gradients-and-variance" title="Permanent link">&para;</a></h1>
+<p><strong>Part IV — Policy-based RL</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Algorithm</strong></td>
+<td>REINFORCE (Williams, 1992) — Monte-Carlo policy gradient</td>
+</tr>
+<tr>
+<td><strong>Environment</strong></td>
+<td><code>BuddyJrReachDiscrete-v0</code> — Discrete(9) jog actions, Box(17) obs</td>
+</tr>
+<tr>
+<td><strong>Script</strong></td>
+<td><code>experiments/07_reinforce.py</code></td>
+</tr>
+<tr>
+<td><strong>Prerequisite</strong></td>
+<td>Experiment 06 (or familiarity with the DQN / discrete-action env)</td>
+</tr>
+<tr>
+<td><strong>Training time</strong></td>
+<td>~4–8 min on CPU (M1 Pro)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="concept">Concept<a class="headerlink" href="#concept" title="Permanent link">&para;</a></h2>
+<p>So far in the curriculum you have learned <em>value-based</em> RL: estimate Q(s, a) and
+act greedily on it. This experiment introduces the second great family — <strong>policy
+gradient</strong> methods — where you skip the value function entirely and learn the
+<em>policy</em> directly.</p>
+<p>The central question is: <strong>how do you push a neural network's parameters in the
+direction of "take actions that lead to more reward" without knowing the gradient
+of the environment?</strong></p>
+<p>The answer is a beautiful identity called the <strong>score-function trick</strong> (also known
+as the log-derivative trick), which is the mathematical engine inside REINFORCE,
+PPO, and TRPO.</p>
+<hr />
+<h2 id="the-mathematics">The mathematics<a class="headerlink" href="#the-mathematics" title="Permanent link">&para;</a></h2>
+<h3 id="the-objective">The objective<a class="headerlink" href="#the-objective" title="Permanent link">&para;</a></h3>
+<p>We want to maximise the expected return:</p>
+<div class="highlight"><pre><span></span><code>J(θ) = E_τ~πθ [ Σ_t r_t ]
+</code></pre></div>
+<p>where <code>τ</code> is a trajectory (episode) sampled by following policy <code>π(a | s; θ)</code>.</p>
+<h3 id="the-score-function-gradient-estimator">The score-function gradient estimator<a class="headerlink" href="#the-score-function-gradient-estimator" title="Permanent link">&para;</a></h3>
+<p>Taking the gradient of <code>J</code> with respect to <code>θ</code> looks impossible at first: how
+do you differentiate through the environment dynamics? The trick is the
+log-derivative identity:</p>
+<div class="highlight"><pre><span></span><code>∇_θ π(a | s; θ) = π(a | s; θ) · ∇_θ log π(a | s; θ)
+</code></pre></div>
+<p>This lets you express the gradient of the <em>expectation</em> as an <em>expectation of
+a gradient</em> — something you can estimate by sampling:</p>
+<div class="highlight"><pre><span></span><code>∇_θ J(θ) = E [ Σ_t  ∇_θ log π(a_t | s_t; θ)  ·  G_t ]
+</code></pre></div>
+<p>where <code>G_t = Σ_{k≥t} γ^(k-t) r_k</code> is the discounted return from step <code>t</code>.</p>
+<p>In English: <strong>increase the log-probability of actions that were followed by a
+large return; decrease it for actions followed by a small return.</strong></p>
+<p>Because optimisers minimise (not maximise), the training loss is the negative:</p>
+<div class="highlight"><pre><span></span><code>L(θ) = − (1/N) · Σ_t  log π(a_t | s_t; θ)  ·  A_t
+</code></pre></div>
+<p>where <code>A_t</code> is the "advantage" — what REINFORCE actually multiplies the log-prob
+by.</p>
+<hr />
+<h2 id="the-variance-problem-and-baselines">The variance problem and baselines<a class="headerlink" href="#the-variance-problem-and-baselines" title="Permanent link">&para;</a></h2>
+<h3 id="why-raw-reinforce-is-noisy">Why raw REINFORCE is noisy<a class="headerlink" href="#why-raw-reinforce-is-noisy" title="Permanent link">&para;</a></h3>
+<p><code>G_t</code> can be large even for mediocre actions if the episode happened to go well
+by chance.  The gradient estimator is <strong>unbiased</strong> (it points in the right
+direction on average) but has <strong>high variance</strong> — individual gradient steps can
+push the policy in the wrong direction, making training slow and erratic.</p>
+<p>This is the "twitchy" behaviour you will see in Foxglove: the arm moves
+differently every time because the policy is not confident about any action.</p>
+<h3 id="the-baseline-fix">The baseline fix<a class="headerlink" href="#the-baseline-fix" title="Permanent link">&para;</a></h3>
+<p>You can subtract any quantity <code>b(s_t)</code> that does <strong>not depend on the action</strong>
+from <code>G_t</code> without introducing bias (it cancels in expectation):</p>
+<div class="highlight"><pre><span></span><code>A_t = G_t − b(s_t)
+</code></pre></div>
+<p>A good baseline is the <strong>state-value function</strong> <code>V(s_t)</code> — the expected return
+from state <code>s_t</code> under the current policy.  Subtracting it leaves the
+<em>advantage</em>: "was this action better or worse than average from this state?"</p>
+<p>In this experiment a second MLP (the "critic") learns <code>V(s_t)</code> by regression
+onto the observed returns <code>G_t</code>.  Because <code>V(s_t)</code> captures most of the
+"background level" of return at each state, <code>A_t = G_t − V(s_t)</code> has much
+smaller variance than raw <code>G_t</code>.</p>
+<p><strong>This is the key insight behind every modern actor-critic method.</strong> PPO, A3C,
+and SAC all use variants of this advantage estimation.</p>
+<hr />
+<h2 id="what-the-experiment-runs">What the experiment runs<a class="headerlink" href="#what-the-experiment-runs" title="Permanent link">&para;</a></h2>
+<p>Two REINFORCE agents are trained on <code>BuddyJrReachDiscrete-v0</code> for 80,000 env
+steps each:</p>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Advantage signal</th>
+<th>Critic?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>no_baseline</code></td>
+<td><code>G_t − mean(G)</code> (batch mean; very weak)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>with_baseline</code></td>
+<td><code>G_t − V(s_t)</code> (learned value network)</td>
+<td>Yes — separate MLP</td>
+</tr>
+</tbody>
+</table>
+<p>Both agents use identical hyperparameters for everything else:
+<code>lr=5e-4</code>, <code>γ=0.99</code>, hidden layers <code>(64, 64)</code>, <code>max_steps=150</code>.</p>
+<p>After training, four plots are saved under <code>experiments/_outputs/07_reinforce/</code>.</p>
+<hr />
+<h2 id="how-to-run">How to run<a class="headerlink" href="#how-to-run" title="Permanent link">&para;</a></h2>
+<h3 id="full-run-recommended-the-first-time">Full run (recommended the first time)<a class="headerlink" href="#full-run-recommended-the-first-time" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/07_reinforce.py
+</code></pre></div>
+<p>Trains both agents (~4–8 min), then saves four plots.</p>
+<h3 id="with-foxglove-live-3d-viewer">With Foxglove (live 3D viewer)<a class="headerlink" href="#with-foxglove-live-3d-viewer" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># In one terminal — leave it running:</span>
+make<span class="w"> </span>foxglove
+
+<span class="c1"># In another terminal:</span>
+python<span class="w"> </span>experiments/07_reinforce.py<span class="w"> </span>--render<span class="w"> </span>foxglove
+</code></pre></div>
+<p>After training, the script streams five greedy rollouts of the <em>with-baseline</em>
+policy to Foxglove.  Open <code>ws://localhost:8765</code> in Foxglove Studio to watch.</p>
+<p>To compare the two agents visually, edit the last line of <code>_foxglove_demo</code> to
+pass <code>algo_no</code> instead of <code>algo_wb</code> and re-run — the motion will be noticeably
+more erratic.</p>
+<h3 id="quick-ci-smoke-test">Quick / CI smoke test<a class="headerlink" href="#quick-ci-smoke-test" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>experiments/07_reinforce.py<span class="w"> </span>--quick
+</code></pre></div>
+<p>Runs 800 steps per agent (a few seconds), prints metrics, skips plots.</p>
+<h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>--quick          Tiny budget, no plots, no Foxglove.  Completes in &lt; 5 s.
+--render foxglove  Stream the trained policy to Foxglove after training.
+--seed INT       Global RNG seed (default: 0).
+--no-plot        Skip matplotlib plots (useful on headless servers).
+</code></pre></div>
+<hr />
+<h2 id="expected-results">Expected results<a class="headerlink" href="#expected-results" title="Permanent link">&para;</a></h2>
+<h3 id="learning-curves-learning_curvespng">Learning curves (<code>learning_curves.png</code>)<a class="headerlink" href="#learning-curves-learning_curvespng" title="Permanent link">&para;</a></h3>
+<p>The <strong>no-baseline</strong> plot (red) shows a very jagged episode-return curve — the
+raw return varies wildly between episodes because the gradient signal is noisy.
+The EMA-smoothed line climbs slowly.</p>
+<p>The <strong>with-baseline</strong> plot (blue) is visibly less noisy even in the raw signal,
+and the smoothed curve climbs earlier and more steeply.</p>
+<p>Both agents' raw curves look messy — that is normal for REINFORCE. The key is
+the <em>difference</em> between them, not the absolute noisiness.</p>
+<h3 id="advantage-variance-advantage_variancepng">Advantage variance (<code>advantage_variance.png</code>)<a class="headerlink" href="#advantage-variance-advantage_variancepng" title="Permanent link">&para;</a></h3>
+<p>This is the quantitative proof that the baseline helps.  Look for:</p>
+<ul>
+<li><strong>No baseline</strong>: the advantage variance stays high throughout (the raw return
+  carries a lot of "background level" noise that could be removed).</li>
+<li><strong>With baseline</strong>: advantage variance is consistently lower — the critic
+  learned to absorb most of the background return, leaving a cleaner signal.</li>
+</ul>
+<p>The <code>var_ratio</code> printed at the end (<code>with_baseline / no_baseline</code>) should be
+less than 1.0 after a full run.  Typical values: 0.3–0.7.</p>
+<h3 id="success-rate-deliberateness-success_ratepng">Success rate / deliberateness (<code>success_rate.png</code>)<a class="headerlink" href="#success-rate-deliberateness-success_ratepng" title="Permanent link">&para;</a></h3>
+<p>Early in training, both agents move randomly (high entropy = "twitchy").  As the
+policy sharpens onto good actions, the success rate rises.  The with-baseline
+agent typically rises faster and reaches a higher plateau within the 80 k step
+budget.</p>
+<p>In Foxglove you will see:</p>
+<ul>
+<li><strong>No-baseline policy</strong>: the arm jogs in many directions before (if ever) landing
+  near the target.  Joint velocities change direction frequently.</li>
+<li><strong>With-baseline policy</strong>: after the policy converges, joint movements are more
+  purposeful — each step is a deliberate jog toward the target rather than
+  semi-random exploration.</li>
+</ul>
+<h3 id="console-output">Console output<a class="headerlink" href="#console-output" title="Permanent link">&para;</a></h3>
+<p>At the end of a full run you should see something like:</p>
+<div class="highlight"><pre><span></span><code>[07] Summary:
+    No baseline   — return=-18.4  SR=0.021  avg_adv_var=142.3
+    With baseline — return=-12.1  SR=0.087  avg_adv_var=54.7
+    Variance ratio (with/no): 0.384  (baseline reduces variance)
+</code></pre></div>
+<p>Exact numbers vary with seed and training budget.</p>
+<hr />
+<h2 id="common-questions">Common questions<a class="headerlink" href="#common-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Why is the success rate still low after 80 k steps?</strong></p>
+<p>REINFORCE is a high-variance algorithm — it is not designed for sample
+efficiency.  The point of this experiment is the <em>comparison</em> between the
+agents, not achieving a high final success rate.  Experiment 08 (PPO) will
+dramatically improve both learning speed and final performance using the same
+core idea with several important engineering fixes.</p>
+<p><strong>Can I train longer?</strong></p>
+<p>Yes.  Set <code>_FULL_STEPS = 200_000</code> at the top of the script and re-run.  The
+gap between the two agents tends to narrow as training continues — given enough
+data even the no-baseline agent converges.  The baseline's advantage is most
+visible in the <strong>early</strong> learning curve.</p>
+<p><strong>Why does <code>var_ratio</code> sometimes exceed 1.0?</strong></p>
+<p>With a short training budget or an unlucky seed, the value network may not have
+learned a good <code>V(s)</code> yet — its predictions are too noisy to help.  This is
+another teaching point: a <em>bad</em> baseline can increase variance.  Try <code>--seed 1</code>
+or <code>--seed 2</code> and see whether the ordering holds.</p>
+<p><strong>What is the difference between this and PPO?</strong></p>
+<p>PPO (Experiment 08) adds three things on top of this experiment's with-baseline
+REINFORCE:</p>
+<ol>
+<li><strong>GAE (Generalised Advantage Estimation)</strong> — a lower-variance advantage
+   that blends Monte-Carlo returns with the critic's one-step TD error.</li>
+<li><strong>Multiple epochs of minibatch updates</strong> — reusing each rollout rather than
+   discarding it after one gradient step.</li>
+<li><strong>The clipped surrogate objective</strong> — a constraint that prevents individual
+   updates from moving the policy too far, avoiding sudden collapses.</li>
+</ol>
+<p>If you understand why the baseline helps here, you already understand <em>why</em>
+each of PPO's additions matters.</p>
+<hr />
+<h2 id="code-highlights">Code highlights<a class="headerlink" href="#code-highlights" title="Permanent link">&para;</a></h2>
+<p>The core implementation lives in <code>rl_lab/algos/policy_gradient/reinforce.py</code>.
+Key lines to study:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># --- Advantage (the difference between the two agents) ---</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_baseline</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># detach() is critical: the baseline must not receive the policy gradient.</span>
+    <span class="n">advantages_t</span> <span class="o">=</span> <span class="n">returns_t</span> <span class="o">-</span> <span class="n">values_t</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Batch-mean baseline — unbiased but weak variance reduction.</span>
+    <span class="n">advantages_t</span> <span class="o">=</span> <span class="n">returns_t</span> <span class="o">-</span> <span class="n">returns_t</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="c1"># --- Policy gradient loss (the score-function estimator) ---</span>
+<span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_policy_dist</span><span class="p">(</span><span class="n">obs_t</span><span class="p">)</span>       <span class="c1"># Categorical distribution over actions</span>
+<span class="n">log_probs</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">act_t</span><span class="p">)</span>      <span class="c1"># log π(a_t | s_t; θ)</span>
+<span class="n">policy_loss</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">log_probs</span> <span class="o">*</span> <span class="n">advantages_t</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>   <span class="c1"># maximise → minimise negative</span>
+</code></pre></div>
+<p>Notice <code>values_t.detach()</code> — the <code>.detach()</code> call is what makes the baseline
+unbiased.  Without it, gradients would flow back through the value network
+when updating the policy, entangling the two objectives.</p>
+<hr />
+<h2 id="aha-takeaway">Aha takeaway<a class="headerlink" href="#aha-takeaway" title="Permanent link">&para;</a></h2>
+<p><strong>You can optimise behaviour directly — and the main battle is taming gradient
+variance.</strong></p>
+<p>Now you understand:</p>
+<ul>
+<li><strong>Policy gradients</strong> — the score-function / log-derivative trick that turns
+  a hard expectation into a sampleable gradient.</li>
+<li><strong>Monte-Carlo returns</strong> — why collecting whole episodes is necessary for
+  REINFORCE (and why it is slow).</li>
+<li><strong>Baselines and advantages</strong> — why subtracting <code>V(s)</code> reduces variance without
+  introducing bias, and why this matters for learning speed.</li>
+<li><strong>Twitchy vs. deliberate motion</strong> — how policy entropy translates to observable
+  arm behaviour in the viewer.</li>
+</ul>
+<p>These concepts are the foundation under PPO (Experiment 08), and they reappear
+in every actor-critic method you will ever use.</p>
+<hr />
+<!-- nav-footer -->
+<p>← Previous: <a href="../06_generalisation/">Generalisation</a> &nbsp;|&nbsp; <a href="../">All experiments</a> &nbsp;|&nbsp; Next: <a href="../08_ppo/">PPO</a> →</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
