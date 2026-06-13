@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: 'If you use this software, please cite it using the following metadata'
+title: 'Buddy Jr RL Lab'
+type: software
+authors:
+  - family-names: McAleer
+    given-names: Kevin
+    email: kevinmcaleer@gmail.com
+repository-code: 'https://github.com/kevinmcaleer/rl_lab'
+url: 'https://www.kevsrobots.com/blog/buddy_jr.html'
+license: MIT
+keywords:
+  - reinforcement-learning
+  - robotics
+  - pybullet
+  - gymnasium
+  - foxglove
+  - urdf
+  - education
+references:
+  - title: 'Buddy Jr: 4-DOF Robot Arm'
+    type: webpage
+    authors:
+      - family-names: McAleer
+        given-names: Kevin
+    url: 'https://www.kevsrobots.com/blog/buddy_jr.html'
+    date-accessed: '2026-06-13'
