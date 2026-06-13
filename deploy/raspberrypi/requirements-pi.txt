@@ -1,0 +1,38 @@
+# Raspberry Pi 5 inference requirements for Buddy Jr RL Lab
+# ============================================================
+# Install with:  pip install -r requirements-pi.txt
+# Or via the project extra:  pip install -e ".[rpi]"
+#
+# PURPOSE: Minimal runtime for on-device policy deployment.
+# The inference path uses rl_lab.deploy.policy_export.NumpyMLPPolicy
+# (a pure-numpy relu-MLP forward pass) — NO torch or stable-baselines3
+# is needed on the Pi.  Export the policy from your training machine
+# with  rl_lab.deploy.policy_export.export_algorithm(algo, "policy.npz")
+# then copy policy.npz to the Pi and load it with NumpyMLPPolicy.load().
+#
+# Hardware chain:
+#   Raspberry Pi 5  ->  I2C (SDA/SCL)  ->  PCA9685  ->  4x SG90 servos
+#   adafruit-circuitpython-servokit drives the PCA9685 over I2C.
+
+# --- Core inference dependencies ---
+
+# NumPy — used by NumpyMLPPolicy, ServoMap, and all safety utilities.
+# Raspberry Pi OS (bookworm) ships numpy via apt; pip install is also fine.
+numpy
+
+# Adafruit ServoKit — PCA9685 PWM driver over I2C.
+# Requires the I2C interface enabled:  sudo raspi-config -> Interface Options -> I2C
+# and the user added to the i2c group:  sudo usermod -aG i2c $USER
+adafruit-circuitpython-servokit
+
+# Foxglove SDK — publishes the live joint-state / transform-tree stream to
+# Foxglove desktop so the real robot overlays the sim view in one layout.
+# Uses a WebSocket server on  ws://<pi-ip>:8765  (no ROS required).
+foxglove-sdk
+
+# --- Explicitly excluded (keep the Pi install light) ---
+# torch          -- NOT needed; inference is pure numpy via NumpyMLPPolicy
+# stable-baselines3 -- NOT needed; training happens on the desktop machine
+# gymnasium      -- NOT needed at inference time
+# pybullet       -- NOT needed at inference time
+# mujoco         -- NOT needed at inference time

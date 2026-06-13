@@ -55,8 +55,10 @@ mujoco = ["mujoco"]
 # image on Linux. Install ROS 2 packages through rosdep / apt, not pip.
 ros2 = []
 
-# Raspberry Pi servo deployment via PCA9685 (adafruit ServoKit).
-rpi = ["adafruit-circuitpython-servokit"]
+# Raspberry Pi servo deployment via PCA9685 (adafruit ServoKit). The on-device
+# inference path is torch-free (numpy-exported policy), so the Pi install stays
+# light — see deploy/raspberrypi/requirements-pi.txt.
+rpi = ["adafruit-circuitpython-servokit", "numpy"]
 
 # Developer toolchain: linting, type-checking, testing, docs, and packaging.
 dev = [
