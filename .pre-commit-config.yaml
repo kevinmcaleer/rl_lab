@@ -1,0 +1,108 @@
+# .pre-commit-config.yaml — pre-commit hook configuration for rl_lab
+#
+# Quick start:
+#   pip install pre-commit
+#   pre-commit install          # installs hooks into .git/hooks/
+#   pre-commit run --all-files  # run once against the whole tree
+#
+# Hooks are grouped by concern. All formatting/lint settings mirror
+# [tool.*] in pyproject.toml (line-length 100, isort profile black).
+
+# Require pre-commit >= 3.x so that the 'language: python' isolation works
+# reliably on Apple Silicon (arm64).
+minimum_pre_commit_version: "3.0.0"
+
+repos:
+  # ---------------------------------------------------------------------------
+  # General file hygiene
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        # Trim trailing spaces/tabs — keeps diffs clean.
+      - id: end-of-file-fixer
+        # Ensure every text file ends with exactly one newline.
+      - id: check-yaml
+        # Validate YAML syntax (catches bad indentation early).
+      - id: check-toml
+        # Validate TOML syntax (pyproject.toml, etc.).
+      - id: check-added-large-files
+        # Warn if you accidentally stage a large binary (models, data).
+        args: ["--maxkb=500"]
+      - id: mixed-line-ending
+        # Enforce LF line endings; reject CRLF so the repo stays Unix-clean.
+        args: ["--fix=lf"]
+
+  # ---------------------------------------------------------------------------
+  # Black — opinionated Python formatter (line-length 100)
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/psf/black
+    rev: "26.5.1"  # latest stable; note black does NOT prefix tags with 'v'
+    hooks:
+      - id: black
+        # black rewrites files in-place to enforce consistent style.
+        # line-length is read from [tool.black] in pyproject.toml;
+        # passing it here too makes the hook self-contained.
+        args: ["--line-length=100"]
+        language_version: python3
+
+  # ---------------------------------------------------------------------------
+  # isort — import sorter (profile=black keeps it compatible with black)
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/pycqa/isort
+    rev: v5.11.3  # last stable release in the 5.x series
+    hooks:
+      - id: isort
+        # profile=black keeps import grouping consistent with black's style.
+        args: ["--profile=black", "--line-length=100"]
+
+  # ---------------------------------------------------------------------------
+  # Ruff — fast Python linter (replaces flake8, pyupgrade, pep8-naming, etc.)
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.17  # pinned to a known-good recent release
+    hooks:
+      - id: ruff
+        # --fix auto-corrects safe lint issues (unused imports, etc.).
+        # Settings (line-length, select, ignore) live in [tool.ruff] in
+        # pyproject.toml so they are shared between the hook and `ruff check`.
+        args: ["--fix"]
+
+  # ---------------------------------------------------------------------------
+  # mypy — static type checker
+  #
+  # Configured leniently so the current docstring-only scaffold passes:
+  #   --ignore-missing-imports  skip stubs for third-party libs not yet typed
+  #
+  # Runs ONLY on rl_lab/ (excludes tests/ which has no code yet and would
+  # cause mypy to fail on missing test stubs).
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.20.2  # tracks mypy 1.x; mirrors the PyPI mypy release
+    hooks:
+      - id: mypy
+        # Scope: only type-check the main package for now.
+        files: ^rl_lab/
+        # Exclude tests/ explicitly — they have no code yet and would fail.
+        exclude: ^tests/
+        args:
+          - "--ignore-missing-imports"   # third-party stubs (pybullet, etc.) not bundled
+          - "--no-strict-optional"       # lenient: allows None where Optional not declared
+          - "--allow-untyped-defs"       # scaffold modules have bare defs; relax gradually
+          - "--warn-return-any"          # useful signal without being a hard block
+        # Additional mypy packages installed into the hook's isolated venv.
+        # Add typed stubs here as the package grows (e.g. types-PyYAML).
+        additional_dependencies: []
+
+  # ---------------------------------------------------------------------------
+  # nbstripout — strip Jupyter notebook outputs before committing
+  #
+  # Keeps notebooks diff-friendly: output cells (which can be large and
+  # noisy) are stripped; only source cells are committed.
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/kynan/nbstripout
+    rev: "0.9.1"
+    hooks:
+      - id: nbstripout
+        # Applies to all .ipynb files (notebooks/ directory and elsewhere).
