@@ -7,26 +7,59 @@ name = "rl-lab"
 version = "0.0.1"
 description = "Buddy Jr RL Lab: learn reinforcement learning on a 4-DOF robot arm in a Mac-friendly sim (PyBullet + Gymnasium + SB3 + Foxglove)."
 readme = "README.md"
-requires-python = ">=3.10,<3.13"
+# Python 3.12 is recommended for best compatibility with PyBullet + torch on Apple Silicon.
+requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Kevin McAleer", email = "kevinmcaleer@gmail.com" }]
-keywords = ["reinforcement-learning", "robotics", "pybullet", "gymnasium", "foxglove", "urdf", "education"]
+keywords = [
+    "reinforcement-learning",
+    "robotics",
+    "pybullet",
+    "gymnasium",
+    "foxglove",
+    "urdf",
+    "education",
+]
 
-# Default Mac-friendly stack. Versions are pinned loosely here and will be
-# tightened as the package is built out (see the M1 milestone issues).
+# Core (Mac-friendly) stack. Versions are intentionally unpinned so pip can
+# resolve the best combination for your Python / platform. Pin in a
+# requirements-lock.txt if you need reproducible CI builds.
 dependencies = [
     "numpy",
     "gymnasium",
     "pybullet",
     "stable-baselines3",
+    "torch",
     "foxglove-sdk",
+    "tensorboard",
+    "matplotlib",
 ]
 
 [project.optional-dependencies]
+# Full MuJoCo physics backend (requires a MuJoCo licence key on older versions).
 mujoco = ["mujoco"]
-ros2 = []          # advanced track runs in Docker/Linux; see docs
+
+# The ROS 2 / rviz advanced track is designed to run inside a ROS 2 Docker
+# image on Linux. Install ROS 2 packages through rosdep / apt, not pip.
+ros2 = []
+
+# Raspberry Pi servo deployment via PCA9685 (adafruit ServoKit).
 rpi = ["adafruit-circuitpython-servokit"]
-dev = ["pytest", "ruff", "mypy", "mkdocs-material"]
+
+# Developer toolchain: linting, type-checking, testing, docs, and packaging.
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "black",
+    "isort",
+    "mypy",
+    "pre-commit",
+    "nbstripout",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+    "build",
+]
 
 [project.urls]
 Homepage = "https://www.kevsrobots.com/blog/buddy_jr.html"
@@ -35,8 +68,56 @@ Repository = "https://github.com/kevinmcaleer/rl_lab"
 [project.scripts]
 rl-lab = "rl_lab.cli:main"
 
+# ---------------------------------------------------------------------------
+# Build
+# ---------------------------------------------------------------------------
 [tool.setuptools.packages.find]
 include = ["rl_lab*"]
 
+# ---------------------------------------------------------------------------
+# Ruff — fast Python linter (replaces flake8 + isort + pyupgrade for CI)
+# ---------------------------------------------------------------------------
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+# E/W = pycodestyle, F = pyflakes, I = isort, UP = pyupgrade,
+# B = flake8-bugbear, C4 = flake8-comprehensions, SIM = flake8-simplify
+select = ["E", "W", "F", "I", "UP", "B", "C4", "SIM"]
+ignore = [
+    "E501",   # line too long — black handles this
+    "B008",   # do not perform function calls in default args
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # assert statements are fine in tests
+
+# ---------------------------------------------------------------------------
+# Black — code formatter
+# ---------------------------------------------------------------------------
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+# ---------------------------------------------------------------------------
+# isort — import sorter (must match Black profile to avoid conflicts)
+# ---------------------------------------------------------------------------
+[tool.isort]
+profile = "black"
+line_length = 100
+
+# ---------------------------------------------------------------------------
+# mypy — static type checker
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+# Skip generated / third-party stubs and the test suite.
+exclude = ["tests", "setup.py"]
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short -q"
