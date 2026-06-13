@@ -1,0 +1,102 @@
+# Experiment NN — <Short Title>
+# Hyperparameter configuration.
+#
+# HOW TO USE
+# ----------
+# 1. Copy this file alongside your experiment script and rename it to match:
+#       experiments/NN_name.yaml
+# 2. Fill in every TODO section.
+# 3. Load this file in your experiment with:
+#
+#       import yaml
+#       from pathlib import Path
+#       cfg = yaml.safe_load(
+#           (Path(__file__).parent / "NN_name.yaml").read_text()
+#       )
+#
+#    Or just hard-code the values directly — YAML is optional.
+#
+# Keys must match the keyword arguments accepted by make_algorithm() and
+# gymnasium.make().  See rl_lab/config/algo/*.yaml for per-algorithm examples.
+
+# ---------------------------------------------------------------------------
+# Meta
+# ---------------------------------------------------------------------------
+
+# TODO: Replace with a slug that matches your experiment script name.
+# E.g. if your script is experiments/05_dqn.py, use "05_dqn".
+experiment: NN_template
+
+# ---------------------------------------------------------------------------
+# Algorithm
+# ---------------------------------------------------------------------------
+
+# TODO: Choose one of:
+#   tabular/discrete : qlearning | sarsa | dqn | reinforce | ppo_min
+#   continuous       : ppo | sac | td3 | ddpg
+algo: qlearning
+
+# TODO: Set to the matching env id, or omit to use the registry default.
+#   Discrete env (tabular/DQN/REINFORCE/PPOMin) : BuddyJrReachDiscrete-v0
+#   Continuous env (PPO/SAC/TD3/DDPG)           : BuddyJrReach-v0
+#   Camera-pointing task                         : BuddyJrCameraPoint-v0
+env_id: BuddyJrReachDiscrete-v0
+
+# ---------------------------------------------------------------------------
+# Training budget
+# ---------------------------------------------------------------------------
+
+# Full run (python experiments/NN_name.py)
+total_steps: 50000
+
+# Quick / CI run (python experiments/NN_name.py --quick)
+# Must finish in a few seconds on CPU.
+total_steps_quick: 400
+
+# ---------------------------------------------------------------------------
+# Environment knobs
+# ---------------------------------------------------------------------------
+
+# Reward mode: sparse | dense | shaped
+# - sparse  : +10 on success only (hard but unambiguous)
+# - dense   : -distance at every step (easier to learn from)
+# - shaped  : potential-based progress term (fast + theoretically sound)
+# TODO: Pick the mode that illustrates your concept (e.g. Exp 4 compares them).
+reward_mode: dense
+
+# Steps before the episode is force-truncated.
+max_steps: 200
+
+# ---------------------------------------------------------------------------
+# Algorithm hyperparameters
+# ---------------------------------------------------------------------------
+# Below is the qlearning / sarsa default set. Replace with the block that
+# matches your chosen algorithm (copy from rl_lab/config/algo/<algo>.yaml).
+
+# --- learning rate: how fast we shift Q toward the TD target
+alpha: 0.1
+
+# --- discount factor: 0 = myopic (care only about immediate reward)
+#                      1 = far-sighted (sum all future rewards equally)
+gamma: 0.99
+
+# --- epsilon-greedy exploration schedule
+epsilon_start: 1.0    # begin fully random to explore the state space
+epsilon_end: 0.05     # never go below 5 % exploration
+epsilon_decay: 0.995  # per-episode multiplicative decay
+
+# --- TabularBuddyJr discretisation (qlearning / sarsa only)
+# bins^3 states from the tip->target obs vector (dims 14-16).
+# bins=7 -> 343 states; bins=9 -> 729 states; bins=12 -> 1 728 states.
+bins: 7
+
+# ---------------------------------------------------------------------------
+# Experiment-specific switches
+# ---------------------------------------------------------------------------
+# TODO: Add any boolean flags or sweep ranges that are unique to your
+# experiment. Examples from the curriculum:
+#
+#   baseline: true          # Exp 07 — enable value baseline in REINFORCE
+#   clip_range: 0.2         # Exp 08 — PPO clip range to sweep
+#   smoothness_weight: 0.01 # Exp 09 — penalise jerky actions
+#   domain_randomize: true  # Exp 11 — apply DomainRandomization wrapper

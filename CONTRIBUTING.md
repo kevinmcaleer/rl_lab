@@ -250,7 +250,7 @@ Every experiment file must:
 - Add or update a test in `tests/` that at least imports and instantiates the
   experiment's env without crashing.
 
-An experiment template (`experiments/00_template.py`) is provided as a starting
+An experiment template (`experiments/_template/`) is provided as a starting
 point.
 
 ---
