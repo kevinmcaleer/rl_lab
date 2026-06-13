@@ -5,11 +5,17 @@ Pytest suite for the Buddy Jr URDF (urdf/buddy_jr.urdf).
 Covers:
 - XML is parseable and the root element is <robot name='buddy_jr'>.
 - Exactly one root link (base_link); the joint-link graph is acyclic.
+- Exactly 4 revolute joints and 2 fixed joints (joint type census).
+- Revolute joint names are exactly ['base_yaw','shoulder_pitch','elbow_pitch','camera_tilt']
+  in that order (order matters for the downstream joint-index mapping).
+- Revolute joint axes are Z, Y, Y, Y in joint order ([0,0,1] then three [0,1,0]).
+- Every revolute joint has lower=-1.5708, upper=+1.5708, effort>0, velocity>0.
 - Each of the 4 revolute joints has a unit-norm axis, lower < upper,
   effort > 0, velocity > 0  (parametrized over the joint names).
 - Every <inertial> link has a positive-definite inertia tensor and its
   principal diagonal moments satisfy the triangle inequality.
-- PyBullet DIRECT-mode load (skipped if pybullet is not installed).
+- PyBullet DIRECT-mode load (skipped if pybullet is not installed) with joint
+  count assertion.
 """
 
 from __future__ import annotations
@@ -27,6 +33,32 @@ import pytest
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _URDF_PATH = _REPO_ROOT / "urdf" / "buddy_jr.urdf"
+
+# Expected joint configuration from the Buddy Jr kinematic design.
+# base_yaw rotates about Z (vertical); shoulder, elbow, camera all pitch about Y.
+_EXPECTED_REVOLUTE_NAMES: list[str] = [
+    "base_yaw",
+    "shoulder_pitch",
+    "elbow_pitch",
+    "camera_tilt",
+]
+
+# Axis vectors for each revolute joint in _EXPECTED_REVOLUTE_NAMES order.
+_EXPECTED_REVOLUTE_AXES: list[list[float]] = [
+    [0.0, 0.0, 1.0],  # base_yaw  – rotation about vertical Z
+    [0.0, 1.0, 0.0],  # shoulder_pitch – pitch about Y
+    [0.0, 1.0, 0.0],  # elbow_pitch    – pitch about Y
+    [0.0, 1.0, 0.0],  # camera_tilt    – pitch about Y
+]
+
+# SG90 servo span: ±90 deg = ±π/2 rad, stored to 4 decimal places in the URDF.
+_EXPECTED_LOWER: float = -1.5708
+_EXPECTED_UPPER: float = +1.5708
+_LIMIT_TOL: float = 1e-4  # tolerance for floating-point comparison of limits
+
+# PyBullet counts ALL joints (revolute + fixed) when calling getNumJoints.
+# 4 revolute + 2 fixed (camera_joint, camera_optical_joint) = 6 total.
+_EXPECTED_TOTAL_JOINTS_PYBULLET: int = 6
 
 
 @pytest.fixture(scope="module")
@@ -111,14 +143,138 @@ def test_joint_tree_is_acyclic(urdf_root: ET.Element) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 3. Revolute joint checks (parametrized)
+# 3. Joint type census: exactly 4 revolute and 2 fixed
 # ---------------------------------------------------------------------------
 
-_REVOLUTE_JOINTS = ["base_yaw", "shoulder_pitch", "elbow_pitch", "camera_tilt"]
+
+def test_exactly_four_revolute_joints(urdf_root: ET.Element) -> None:
+    """The URDF must declare exactly 4 revolute joints.
+
+    Buddy Jr has:
+      base_yaw, shoulder_pitch, elbow_pitch, camera_tilt (all revolute)
+    Any deviation (e.g. a new joint added without updating this test) should
+    be a deliberate, reviewed change to keep the downstream joint-index mapping
+    in sync with rl_lab.robot.buddy_jr.JOINTS.
+    """
+    revolute_joints = [j for j in urdf_root.findall("joint") if j.get("type") == "revolute"]
+    assert len(revolute_joints) == 4, (
+        f"Expected 4 revolute joints, found {len(revolute_joints)}: "
+        f"{[j.get('name') for j in revolute_joints]}"
+    )
+
+
+def test_exactly_two_fixed_joints(urdf_root: ET.Element) -> None:
+    """The URDF must declare exactly 2 fixed joints.
+
+    Buddy Jr has:
+      camera_joint (camera_mount -> camera_link)
+      camera_optical_joint (camera_link -> camera_optical_frame)
+    These anchor the end-effector frame used by the IK and RL reward functions.
+    """
+    fixed_joints = [j for j in urdf_root.findall("joint") if j.get("type") == "fixed"]
+    assert len(fixed_joints) == 2, (
+        f"Expected 2 fixed joints, found {len(fixed_joints)}: "
+        f"{[j.get('name') for j in fixed_joints]}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 4. Revolute joint name order
+# ---------------------------------------------------------------------------
+
+
+def test_revolute_joint_names_and_order(urdf_root: ET.Element) -> None:
+    """Revolute joints must appear in the URDF with the exact names and order.
+
+    The order determines the joint-index mapping used throughout rl_lab
+    (rl_lab.robot.buddy_jr.JOINTS, gym observations, PyBullet joint indices).
+    Changing either a name or the order without updating this test and the
+    downstream code will silently break the whole stack.
+    """
+    revolute_joints = [j for j in urdf_root.findall("joint") if j.get("type") == "revolute"]
+    actual_names = [j.get("name") for j in revolute_joints]
+    assert actual_names == _EXPECTED_REVOLUTE_NAMES, (
+        f"Revolute joint names/order mismatch.\n"
+        f"  expected : {_EXPECTED_REVOLUTE_NAMES}\n"
+        f"  got      : {actual_names}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 5. Revolute joint axes (Z then Y, Y, Y)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "joint_name, expected_axis",
+    list(zip(_EXPECTED_REVOLUTE_NAMES, _EXPECTED_REVOLUTE_AXES, strict=True)),
+)
+def test_revolute_joint_axis_direction(
+    urdf_root: ET.Element, joint_name: str, expected_axis: list[float]
+) -> None:
+    """Each revolute joint must rotate about the expected world axis.
+
+    base_yaw rotates the whole arm about the vertical (Z) axis.
+    The remaining three joints all pitch about the lateral (Y) axis.
+    An incorrect axis will produce wrong kinematics even if the limits look fine.
+    """
+    j = _get_joint(urdf_root, joint_name)
+    axis_el = j.find("axis")
+    assert axis_el is not None, f"Joint '{joint_name}': missing <axis>"
+    raw = axis_el.get("xyz", "1 0 0")
+    actual = np.array([float(v) for v in raw.split()])
+    expected = np.array(expected_axis, dtype=float)
+    assert np.allclose(actual, expected, atol=1e-6), (
+        f"Joint '{joint_name}': axis mismatch.\n"
+        f"  expected : {expected.tolist()}\n"
+        f"  got      : {actual.tolist()}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 6. Revolute joint exact limits (+/-1.5708, effort>0, velocity>0)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("joint_name", _EXPECTED_REVOLUTE_NAMES)
+def test_revolute_joint_exact_limits(urdf_root: ET.Element, joint_name: str) -> None:
+    """Every revolute joint must have lower=-1.5708 and upper=+1.5708.
+
+    These values correspond to ±90 deg (π/2 rad), matching the SG90 servo
+    travel defined in rl_lab.robot.buddy_jr.JOINT_LIMIT.  A mismatch here
+    means the URDF and the Python constants are out of sync, which breaks
+    the clamping logic and the gym observation/action spaces.
+    """
+    j = _get_joint(urdf_root, joint_name)
+    limit_el = j.find("limit")
+    assert limit_el is not None, f"Joint '{joint_name}': missing <limit>"
+    lower = float(limit_el.get("lower", 0))
+    upper = float(limit_el.get("upper", 0))
+    effort = float(limit_el.get("effort", 0))
+    velocity = float(limit_el.get("velocity", 0))
+
+    assert (
+        abs(lower - _EXPECTED_LOWER) < _LIMIT_TOL
+    ), f"Joint '{joint_name}': lower limit is {lower:.6f}, expected {_EXPECTED_LOWER}"
+    assert (
+        abs(upper - _EXPECTED_UPPER) < _LIMIT_TOL
+    ), f"Joint '{joint_name}': upper limit is {upper:.6f}, expected {_EXPECTED_UPPER}"
+    assert effort > 0.0, f"Joint '{joint_name}': effort={effort} must be > 0"
+    assert velocity > 0.0, f"Joint '{joint_name}': velocity={velocity} must be > 0"
+
+
+# ---------------------------------------------------------------------------
+# 7. Revolute joint checks kept from original suite (parametrized)
+#    (unit-norm axis, lower < upper, effort > 0, velocity > 0)
+#    These overlap with the new exact-limit test but are kept because they
+#    are more readable as independent failure messages for learners.
+# ---------------------------------------------------------------------------
+
+_REVOLUTE_JOINTS = _EXPECTED_REVOLUTE_NAMES  # alias kept for clarity
 
 
 def _get_joint(root: ET.Element, joint_name: str) -> ET.Element:
-    """Return the <joint> element with the given name, or fail."""
+    """Return the <joint> element with the given name, or fail the test."""
     for j in root.findall("joint"):
         if j.get("name") == joint_name:
             return j
@@ -189,7 +345,7 @@ def test_revolute_joint_velocity_positive(urdf_root: ET.Element, joint_name: str
 
 
 # ---------------------------------------------------------------------------
-# 4. Inertia tensor checks
+# 8. Inertia tensor checks
 # ---------------------------------------------------------------------------
 
 
@@ -271,17 +427,25 @@ def test_all_inertials_triangle_inequality(urdf_root: ET.Element) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 5. PyBullet load test
+# 9. PyBullet headless load test
 # ---------------------------------------------------------------------------
 
 
 def test_pybullet_load_urdf() -> None:
-    """Load buddy_jr.urdf in PyBullet DIRECT mode (headless).
+    """Load buddy_jr.urdf in PyBullet DIRECT mode (headless) and check joint count.
 
     This is the most thorough integration check: PyBullet validates link
     geometry, joint parent/child references, and mass properties together.
+
+    The test also asserts that PyBullet reports the expected total number of
+    joints (revolute + fixed = 4 + 2 = 6).  PyBullet's getNumJoints returns
+    ALL joint types; the count must match _EXPECTED_TOTAL_JOINTS_PYBULLET so
+    that the downstream joint-index look-ups in rl_lab.sim.pybullet_backend
+    remain in sync with the URDF.
+
     The test is automatically skipped if pybullet is not installed so that
     the pure-Python CI environment can still run the rest of the suite.
+    (PyBullet has no macOS arm64 wheel; CI tests this section on Linux only.)
     """
     p = pytest.importorskip("pybullet", reason="pybullet not installed")
 
@@ -289,5 +453,13 @@ def test_pybullet_load_urdf() -> None:
     try:
         robot_id = p.loadURDF(str(_URDF_PATH), useFixedBase=True, physicsClientId=cid)
         assert robot_id >= 0, "PyBullet loadURDF returned negative id -- unknown error"
+
+        num_joints = p.getNumJoints(robot_id, physicsClientId=cid)
+        assert num_joints == _EXPECTED_TOTAL_JOINTS_PYBULLET, (
+            f"PyBullet reports {num_joints} joints; expected {_EXPECTED_TOTAL_JOINTS_PYBULLET} "
+            f"(4 revolute + 2 fixed).  If the URDF gained or lost joints, update "
+            f"_EXPECTED_TOTAL_JOINTS_PYBULLET in this file AND the joint-index mapping in "
+            f"rl_lab/sim/pybullet_backend.py."
+        )
     finally:
         p.disconnect(cid)
