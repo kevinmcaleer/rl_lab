@@ -166,9 +166,17 @@ Both are excellent physics engines. The lab puts a thin `SimBackend` interface
   native URDF loader and a built-in `calculateInverseKinematics`, so a lesson can
   put classical IK and a learned policy side by side with no extra tooling — the
   most pedagogically relevant path for makers porting to real hardware.
-- **It is one `pip install` with an instant local look.** PyBullet has an
-  optional built-in GUI window, so a beginner can *see the arm move before any RL
-  exists* (Experiment 2) with zero viewer setup.
+- **It gives an instant local look.** PyBullet has an optional built-in GUI
+  window, so a beginner can *see the arm move before any RL exists*
+  (Experiment 2) with zero viewer setup.
+
+> **macOS install caveat.** PyBullet has no Apple-Silicon wheel and its source
+> build currently fails on recent Xcode, so it is *not* a core dependency — it
+> lives in the `[sim]` extra. On Linux/Windows `pip install -e ".[sim]"` is a
+> plain wheel; on macOS arm64 install it with `conda install -c conda-forge
+> pybullet`. The base lab and `[dev]` tooling stay 100% pip-installable on every
+> platform, and the pure-Python URDF tests self-skip the PyBullet load when the
+> wheel is absent — so this never blocks development or CI on a Mac.
 
 **MuJoCo stays first-class but optional** (the `[mujoco]` extra), behind the
 exact same `SimBackend` interface. Its strengths — the cleanest arm64 wheels and

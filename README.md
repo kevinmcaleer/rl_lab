@@ -22,8 +22,10 @@ is to genuinely **teach RL** so you can apply it in your own robotics projects.
 - **You learn by watching.** Every experiment streams the arm and the reward
   signal live into a 3D viewer, so abstract RL concepts (exploration, value
   estimates, advantage, sim-to-real noise) become things you can *see*.
-- **It runs on a Mac.** The default stack is 100% `pip install` on Apple Silicon
-  — no ROS2, no Gazebo, no Homebrew, no compilers, no Rosetta.
+- **It runs on a Mac.** The base lab and dev tooling are 100% `pip install` on
+  Apple Silicon — no ROS2, no Gazebo, no Homebrew. The one native piece, the
+  PyBullet physics backend, ships as the `[sim]` extra (one `conda install` on
+  Apple Silicon, a plain wheel everywhere else — see Quickstart).
 - **It's a real robot.** Buddy Jr is a printable 4-servo arm with a Raspberry Pi
   camera on the end. The same code you train in sim can drive the real servos.
 
@@ -31,7 +33,7 @@ is to genuinely **teach RL** so you can apply it in your own robotics projects.
 
 | Layer | Tool | Why |
 |-------|------|-----|
-| Physics (default) | **PyBullet** | `pip install pybullet`, native URDF loader, built-in FK + IK helper that mirrors the blog's law-of-cosines math |
+| Physics (default) | **PyBullet** | native URDF loader + built-in FK/IK that mirrors the blog's law-of-cosines math; ships as the `[sim]` extra (wheel on Linux/Windows, conda-forge on macOS arm64) |
 | Physics (swappable) | **MuJoCo** | Official arm64 wheels, higher actuator fidelity; selectable behind the same backend interface (and itself a "does my policy transfer?" experiment) |
 | Env API | **Gymnasium** | Standard `reset()/step()` interface you modify in experiments |
 | Algorithms | **Stable-Baselines3** | One-liner PPO / SAC / DQN / TD3 on macOS CPU, plus from-scratch teaching implementations |
@@ -49,8 +51,15 @@ visualization sink changes — a nice lesson in how visualization is decoupled f
 python3.12 -m venv .venv && source .venv/bin/activate
 pip install --upgrade pip
 
-# 2. Install the lab (default Mac-friendly stack)
-pip install -e .            # pyproject extras: [mujoco] [ros2] [rpi] [dev]
+# 2. Install the lab + dev tooling (pure pip, works on macOS Apple Silicon)
+pip install -e ".[dev]"     # other extras: [sim] [mujoco] [ros2] [rpi]
+
+# 2b. Add the PyBullet physics backend (the [sim] extra).
+#     Linux / Windows: a plain wheel —
+pip install -e ".[sim]"
+#     macOS Apple Silicon (no pybullet wheel; source build breaks on Xcode):
+#     install it from conda-forge instead —
+#         conda install -c conda-forge pybullet
 
 # 3. Download the Foxglove desktop app (free) and open it.
 #    Connect to the live server at ws://localhost:8765

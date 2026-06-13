@@ -24,10 +24,15 @@ keywords = [
 # Core (Mac-friendly) stack. Versions are intentionally unpinned so pip can
 # resolve the best combination for your Python / platform. Pin in a
 # requirements-lock.txt if you need reproducible CI builds.
+#
+# NOTE: pybullet is deliberately NOT a core dependency. It has no prebuilt
+# wheel for macOS Apple Silicon and its source build fails against recent
+# Xcode SDKs, which would break `pip install` on the very platform this lab
+# targets. It therefore lives in the [sim] extra (see below) so the base and
+# [dev] installs stay 100% pip-installable on macOS.
 dependencies = [
     "numpy",
     "gymnasium",
-    "pybullet",
     "stable-baselines3",
     "torch",
     "foxglove-sdk",
@@ -36,6 +41,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Default physics backend. On Linux/Windows this is a clean `pip install`.
+# On macOS Apple Silicon there is no pybullet wheel and the source build
+# currently fails on recent Xcode — install it via conda-forge instead:
+#     conda install -c conda-forge pybullet
+sim = ["pybullet"]
+
 # Full MuJoCo physics backend (requires a MuJoCo licence key on older versions).
 mujoco = ["mujoco"]
 

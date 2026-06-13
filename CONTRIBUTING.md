@@ -56,6 +56,20 @@ After step 3 you should have `rl-lab` available on your PATH:
 rl-lab --help
 ```
 
+### The physics backend (`[sim]`)
+
+The default PyBullet backend is the `[sim]` extra. It is kept out of the core
+deps because it has no macOS Apple-Silicon wheel and its source build fails on
+recent Xcode:
+
+```bash
+pip install -e ".[sim]"            # Linux / Windows: a plain wheel
+conda install -c conda-forge pybullet   # macOS Apple Silicon: use conda-forge
+```
+
+The pure-Python URDF tests run without PyBullet (they self-skip the load test
+when the wheel is absent), so you can develop and pass CI on macOS without it.
+
 ### Optional extras
 
 ```bash

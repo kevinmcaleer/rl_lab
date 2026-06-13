@@ -36,7 +36,7 @@ RL_LAB    := $(VENV_BIN)/rl-lab
 # .PHONY declarations — these targets never produce a file of the same name
 # ---------------------------------------------------------------------------
 
-.PHONY: help install lint type test docs sim foxglove clean
+.PHONY: help install install-sim lint type test docs sim foxglove clean
 
 # ---------------------------------------------------------------------------
 # help  (default goal)
@@ -64,6 +64,12 @@ $(VENV)/bin/activate:
 	$(PIP) install --upgrade pip
 	$(PIP) install -e ".[dev]"
 	@echo ">>> Installation complete.  Run 'source $(VENV)/bin/activate' to activate."
+
+install-sim: install  ## Add the PyBullet physics backend (the [sim] extra)
+	@echo ">>> Installing the [sim] extra (PyBullet)"
+	@echo ">>> Note: on macOS Apple Silicon there is no pybullet wheel; if this"
+	@echo ">>>       fails, install it via: conda install -c conda-forge pybullet"
+	$(PIP) install -e ".[sim]"
 
 # ---------------------------------------------------------------------------
 # lint

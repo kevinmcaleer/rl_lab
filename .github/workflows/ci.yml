@@ -1,8 +1,17 @@
 # CI pipeline for the Buddy Jr RL Lab.
-# Runs lint (ruff), type-checking (mypy), tests (pytest), and a headless
-# PyBullet URDF smoke test on every push to main and on pull requests.
-# macOS and Ubuntu are both covered so learners on either platform can
-# trust the codebase before diving into experiments.
+#
+# Two jobs:
+#   * quality   — lint (ruff), format (black), types (mypy), tests (pytest)
+#                 across macOS + Ubuntu on Python 3.10/3.11/3.12. Installs the
+#                 base package + [dev] extras, which are 100% pip-installable on
+#                 every platform (the physics backend is an optional extra).
+#   * sim-smoke — installs the [sim] extra (pybullet) on Ubuntu, where a
+#                 manylinux wheel exists, and runs the headless URDF load test.
+#
+# pybullet is intentionally NOT in the cross-platform matrix: it has no macOS
+# arm64 wheel and its source build fails on recent Xcode. The pure-Python URDF
+# checks still run everywhere (pytest skips the pybullet-specific load when the
+# wheel is unavailable), so macOS coverage stays meaningful.
 name: CI
 
 on:
@@ -17,8 +26,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: "test / ${{ matrix.os }} / py${{ matrix.python-version }}"
+  quality:
+    name: "quality / ${{ matrix.os }} / py${{ matrix.python-version }}"
     strategy:
       fail-fast: false   # surface all OS/version failures in one pass
       matrix:
@@ -28,64 +37,60 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      # ------------------------------------------------------------------ #
-      # 1. Source checkout
-      # ------------------------------------------------------------------ #
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------------------ #
-      # 2. Python setup + pip cache
-      #    Caching the pip download cache speeds up repeated runs noticeably
-      #    on both Ubuntu and macOS runners.
-      # ------------------------------------------------------------------ #
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      # ------------------------------------------------------------------ #
-      # 3. Install the package + dev extras
-      #    [dev] pulls in: pytest, ruff, mypy, mkdocs-material
-      # ------------------------------------------------------------------ #
+      # Installs the base package + [dev] tooling. This also verifies the
+      # epic's "fresh clone installs with pip install -e .[dev]" criterion on
+      # both platforms (no native compilation required).
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
 
       - name: Install rl-lab with dev extras
-        run: pip install -e .[dev]
+        run: pip install -e ".[dev]"
 
-      # ------------------------------------------------------------------ #
-      # 4. Lint — ruff check catches errors, style, and import hygiene
-      # ------------------------------------------------------------------ #
       - name: ruff check (lint)
         run: ruff check .
 
-      # ------------------------------------------------------------------ #
-      # 5. Format check — black is the formatter of record (see .pre-commit
-      #    -config.yaml and [tool.black]); --check is read-only.
-      # ------------------------------------------------------------------ #
+      # black is the formatter of record (see .pre-commit-config.yaml and
+      # [tool.black]); --check is read-only.
       - name: black --check (format)
         run: black --check .
 
-      # ------------------------------------------------------------------ #
-      # 6. Type checking — mypy on the main package
-      #    Strict checking is progressive: the package is young, so we start
-      #    permissive and tighten per-module as each issue is resolved.
-      # ------------------------------------------------------------------ #
       - name: mypy (type check rl_lab)
         run: mypy rl_lab
 
-      # ------------------------------------------------------------------ #
-      # 7. Unit + integration tests
-      # ------------------------------------------------------------------ #
+      # The pybullet load test self-skips when the wheel is unavailable
+      # (importorskip), so this is meaningful on macOS too.
       - name: pytest
         run: pytest -q
 
-      # ------------------------------------------------------------------ #
-      # 8. Headless URDF smoke test via PyBullet
-      #    Runs in DIRECT (no-display) mode — no X server or virtual
-      #    framebuffer required.  The script is provided by issue #12.
-      # ------------------------------------------------------------------ #
+  sim-smoke:
+    name: "sim-smoke / ubuntu / py3.12"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # The [sim] extra adds pybullet, which has a manylinux wheel on Linux.
+      - name: Install rl-lab with the sim extra
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[sim]"
+
+      # Headless URDF smoke test in DIRECT (no-display) mode — exercises the
+      # real PyBullet load path that macOS runners cannot build.
       - name: Validate buddy_jr.urdf (headless PyBullet)
         run: python scripts/validate_urdf.py

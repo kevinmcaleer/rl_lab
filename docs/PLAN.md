@@ -22,15 +22,18 @@ Rationale:
   URDF loader and its built-in `calculateInverseKinematics` directly mirror the
   blog's law-of-cosines IK, so a lesson can compare RL against classical IK with no
   extra tooling. This is the most pedagogically relevant path for this audience.
-- PyBullet is a single `pip install` with an optional `GUI` mode for a quick local
-  look, lowering friction for a first run.
+- PyBullet has an optional `GUI` mode for a quick local look, lowering friction
+  for a first run.
 - MuJoCo's strengths (cleanest arm64 wheels, higher actuator fidelity) are real and
   worth keeping. We therefore keep a thin **engine-abstraction layer** so switching
   to MuJoCo is a config flag — which *itself* becomes the "does my policy transfer
   across simulators?" experiment, turning the disagreement into a teaching moment.
-- The one Apple-Silicon caveat for PyBullet (occasional x86_64-under-Rosetta wheel)
-  is handled by a documented `platform.machine() == "arm64"` check in install docs
-  and a `test_urdf_loads.py` guard.
+- **Apple-Silicon reality:** PyBullet has no macOS arm64 wheel and its source build
+  fails on recent Xcode, so it is shipped as the optional `[sim]` extra rather than
+  a core dependency. macOS users install it via `conda install -c conda-forge
+  pybullet`; Linux/Windows get a plain wheel. The base + `[dev]` install stays pure
+  pip on macOS, and `test_urdf_loads.py` guards the PyBullet load with
+  `importorskip` so CI is green on macOS without it.
 
 Everything else from the Architecture doc stands: **Foxglove** is the default
 visualizer, **Gymnasium** is the env API, **Stable-Baselines3** is the default
