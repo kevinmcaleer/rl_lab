@@ -84,13 +84,20 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      # The [sim] extra adds pybullet, which has a manylinux wheel on Linux.
-      - name: Install rl-lab with the sim extra
+      # The [sim] extra adds pybullet (manylinux wheel on Linux); [dev] adds
+      # pytest so the PyBullet-only backend tests actually run here.
+      - name: Install rl-lab with the sim + dev extras
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[sim]"
+          pip install -e ".[sim,dev]"
 
       # Headless URDF smoke test in DIRECT (no-display) mode — exercises the
       # real PyBullet load path that macOS runners cannot build.
       - name: Validate buddy_jr.urdf (headless PyBullet)
         run: python scripts/validate_urdf.py
+
+      # Full test suite with PyBullet present: the backend tests (which
+      # importorskip pybullet and are skipped in the quality job) run for real
+      # here and cross-check the backend against the analytic kinematics.
+      - name: pytest (with PyBullet backend)
+        run: pytest -q
