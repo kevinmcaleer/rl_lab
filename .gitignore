@@ -29,12 +29,14 @@ pip-delete-this-directory.txt
 *.spec
 
 # ---- Virtual environments ----
-.venv/
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
+# Anchored to the repo root with a leading slash so they only match top-level
+# virtualenvs, NOT the rl_lab/env package or rl_lab/config/env presets.
+/.venv/
+/venv/
+/env/
+/ENV/
+/env.bak/
+/venv.bak/
 .python-version-local
 .conda/
 .mamba/

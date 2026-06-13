@@ -1,0 +1,8 @@
+# Hard reach preset: full reachable shell, tight tolerance, sparse reward,
+# longer episodes — needs PPO/SAC and good exploration.
+env_id: BuddyJrReach-v0
+reward_mode: sparse
+success_tol: 0.015
+max_steps: 300
+target_radius: [0.04, 0.155]
+reset_noise: 0.15

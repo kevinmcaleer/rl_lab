@@ -1,0 +1,7 @@
+# Medium reach preset: most of the reachable shell, standard tolerance.
+env_id: BuddyJrReach-v0
+reward_mode: dense
+success_tol: 0.02
+max_steps: 200
+target_radius: [0.04, 0.13]
+reset_noise: 0.1

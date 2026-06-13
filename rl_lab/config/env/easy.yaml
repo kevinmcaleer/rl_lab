@@ -1,0 +1,8 @@
+# Easy reach preset: small workspace, generous tolerance, short episodes.
+# A good first target for tabular Q-learning / DQN.
+env_id: BuddyJrReach-v0
+reward_mode: dense
+success_tol: 0.03
+max_steps: 150
+target_radius: [0.06, 0.10]
+reset_noise: 0.05
