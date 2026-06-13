@@ -1,11 +1,124 @@
 # Buddy Jr URDF
 
-FILE: /Users/kev/Python/rl_lab/buddy_jr.urdf (written and validated).
+FILE: `urdf/buddy_jr.urdf`
 
-VALIDATION PERFORMED: PyBullet could not be pip-installed in this macOS sandbox (wheel build failed, common on Apple Silicon without a full toolchain), so I validated with Python's XML parser plus a structural/physics audit. All checks pass: XML is well-formed; single root (base_link); kinematic tree is acyclic and every child link has exactly one parent joint; all revolute axes are unit vectors; all limits satisfy lower<upper with effort>0 and velocity>0; all masses>0; and every inertia tensor is positive-definite AND satisfies the principal-moment triangle inequality (i.e. a physically realizable rigid body, which PyBullet requires or it silently clamps/warns). Inertia values were cross-checked against the exact analytic box/cylinder formulas. The XML uses only <box> and <cylinder> primitives, so it loads with zero external mesh files. To load in PyBullet: p.loadURDF("buddy_jr.urdf", useFixedBase=True).
+Primitive-only URDF (boxes and cylinders, no external mesh files) for the
+Buddy Jr 4-DOF robot arm.  Loads in PyBullet, MuJoCo, rviz, and Foxglove
+without any additional dependencies.
 
-COORDINATE CONVENTIONS (REP-103, right-handed): +X forward, +Y left, +Z up; base sits on the ground plane at z=0. base_link is a 60mm-dia x 25mm puck. The base_yaw pivot is at z=0.025; the shoulder_pitch pivot is at z=0.05 (top of the rotating bracket). Both 80mm arm segments are modelled extending along their own local +Z from each pivot, so at the zero pose the whole arm points straight up. The end-effector for IK / RL reward is camera_link (the lens TCP); a child camera_optical_frame applies the standard optical-frame rotation (+Z forward, +X right, +Y down) for any image-projection math. Max horizontal reach with both segments extended is 160 mm (80+80), matching the real link lengths.
+Full documentation: see [`docs/robot/urdf.md`](../docs/robot/urdf.md),
+[`docs/robot/kinematics.md`](../docs/robot/kinematics.md), and
+[`docs/robot/frames.md`](../docs/robot/frames.md).
 
-URDF RADIANS -> SG90 SERVO DEGREES: Each of the 4 revolute joints is limited to +/-1.5708 rad (a 180-degree span) to match an SG90's usable travel. The real robot drives a PCA9685 via Adafruit ServoKit in degrees 0..180, where ~90 deg is mechanical centre. Map URDF joint angle theta (radians) to a servo command with: servo_deg = math.degrees(theta) + 90 (so theta=0 rad -> 90 deg centre, theta=-1.5708 -> 0 deg, theta=+1.5708 -> 180 deg). Clamp the result to [0,180] before calling servokit.servo[ch].angle. Note: base_yaw uses the same +/-90deg convention but its zero is "arm facing forward (+X)". Watch for sign/direction: if a servo turns the opposite way to the sim, either flip the joint <axis> sign in the URDF or invert in software (servo_deg = 90 - math.degrees(theta)) so sim and hardware agree. The order base_yaw(0), shoulder_pitch(1), elbow_pitch(2), camera_tilt(3) maps directly to PCA9685 channels 0-3.
+---
 
-SWAPPING IN REAL STL MESHES LATER: The primitives are intentionally placed so each link's geometry grows from its parent joint origin, mirroring how a printed part attaches at its servo horn. To switch to real prints, replace each link's <geometry><box .../></geometry> (and the matching <collision>) with <mesh filename="package://buddy_jr_description/meshes/<part>.stl" scale="0.001 0.001 0.001"/>. The scale of 0.001 is the usual fix because most STL exports (from Fusion/Tinkercad) are in millimetres while URDF expects metres. After importing, adjust each visual/collision <origin> so the mesh's own model origin lines up with the joint pivot (mesh origins are rarely at the rotation axis); keep the joint <origin> values here as the kinematic ground truth and only move the visual origins. For collision performance in PyBullet/RL, keep the simple primitives as the <collision> shapes (or use a convex-hull-decomposed mesh) even after adding the detailed visual meshes; full-resolution collision meshes slow the sim and destabilise contacts. Keep masses/inertias as-is initially, then refine from your slicer's reported part mass and CAD inertia if you want higher dynamic fidelity. Foxglove and rviz both render the boxes/cylinders directly today (publish robot_description + joint_states / TF); no mesh files are needed to start visualizing.
+## Validation
+
+```bash
+python scripts/validate_urdf.py        # checks XML, joint limits, inertias, optional PyBullet load
+```
+
+Exit code 0 = all checks passed.  Run after every edit.
+
+---
+
+## Joint table
+
+| # | Joint | Parent | Child | Axis | Origin (m) | Limits (rad) | Effort (N·m) |
+|---|---|---|---|---|---|---|---|
+| 0 | `base_yaw` | `base_link` | `shoulder_bracket` | Z | 0 0 0.025 | ±1.5708 | 1.5 |
+| 1 | `shoulder_pitch` | `shoulder_bracket` | `upper_arm` | Y | 0 0 0.025 | ±1.5708 | 1.5 |
+| 2 | `elbow_pitch` | `upper_arm` | `forearm` | Y | 0 0 0.080 | ±1.5708 | 1.2 |
+| 3 | `camera_tilt` | `forearm` | `camera_mount` | Y | 0 0 0.080 | ±1.5708 | 0.8 |
+| — | `camera_joint` (fixed) | `camera_mount` | `camera_link` | — | 0.0145 0 0.010 | — | — |
+| — | `camera_optical_joint` (fixed) | `camera_link` | `camera_optical_frame` | — | 0.008 0 0, rpy −π/2 0 −π/2 | — | — |
+
+All four revolute joints span ±π/2 rad (0–180° of SG90 travel).
+`camera_link` is the TCP (end-effector) used by the RL reward and IK solver.
+
+---
+
+## Frames summary (REP-103: +X fwd, +Y left, +Z up)
+
+```
+World (z=0)
+  └─ base_link            z=0.000  fixed
+       └─ [base_yaw, Z]   z=0.025
+            └─ [shoulder_pitch, Y]  z=0.050   upper_arm extends to z=0.130
+                 └─ [elbow_pitch, Y]  z=0.130  forearm extends to z=0.210
+                      └─ [camera_tilt, Y]  z=0.210  camera_mount
+                           └─ camera_link  (TCP, x=0.0145, z=0.220)
+                                └─ camera_optical_frame  (+Z fwd optical)
+```
+
+At q = [0, 0, 0, 0] the arm points straight up; the camera tip is at
+(x=0.0145, y=0, z=0.220) m.
+
+---
+
+## Radians to servo degrees
+
+```
+servo_deg = degrees(theta) + 90    clamped to [0, 180]
+```
+
+| theta (rad) | servo_deg | Position |
+|---|---|---|
+| −π/2 | 0° | Full anticlockwise |
+| 0 | 90° | Centre |
+| +π/2 | 180° | Full clockwise |
+
+Joint order maps directly to PCA9685 channels 0–3:
+`base_yaw` → Ch 0, `shoulder_pitch` → Ch 1, `elbow_pitch` → Ch 2, `camera_tilt` → Ch 3.
+
+API: `rl_lab.robot.buddy_jr.radians_to_servo_degrees(q)` and `servo_degrees_to_radians(deg)`.
+For per-joint sign / trim calibration, use `rl_lab.robot.servo_map.ServoMap`.
+
+---
+
+## Loading in PyBullet
+
+```python
+import pybullet as p
+from rl_lab.robot.buddy_jr import urdf_path
+
+cid = p.connect(p.DIRECT)
+p.loadURDF(str(urdf_path()), useFixedBase=True, physicsClientId=cid)
+```
+
+---
+
+## Swapping in STL meshes later
+
+The primitives are intentionally placed so each link's geometry grows from its
+parent joint origin, mirroring how a printed part attaches at its servo horn.
+To switch to real prints:
+
+1. Export each part as STL in **millimetres** into `urdf/meshes/`.
+2. In each `<visual><geometry>`, replace `<box .../>` with:
+   ```xml
+   <mesh filename="package://buddy_jr_description/meshes/<part>.stl"
+         scale="0.001 0.001 0.001"/>
+   ```
+3. Adjust the `<visual><origin>` (not the `<joint><origin>`) so the mesh
+   pivot aligns with the joint frame.
+4. Keep the `<collision>` shapes as boxes/cylinders for simulation speed.
+5. Run `python scripts/validate_urdf.py` to confirm nothing broke.
+
+See [`docs/robot/urdf.md`](../docs/robot/urdf.md) §6 for the full procedure.
+
+---
+
+## Regenerating
+
+For small edits (link lengths, masses) edit the URDF directly — it is plain XML.
+For a fully parameterised rebuild, convert to Xacro:
+
+```bash
+xacro urdf/buddy_jr.urdf.xacro > urdf/buddy_jr.urdf
+python scripts/validate_urdf.py
+```
+
+If you change `SHOULDER_LENGTH`, `ELBOW_LENGTH`, `BASE_HEIGHT`, or
+`CAMERA_OFFSET`, update the matching constants in `rl_lab/robot/buddy_jr.py`
+as well — the analytic kinematics read from those values, not from the URDF XML.
