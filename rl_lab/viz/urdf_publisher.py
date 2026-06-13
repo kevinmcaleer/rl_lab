@@ -26,15 +26,14 @@ import numpy as np
 from foxglove.messages import FrameTransforms, SceneUpdate
 
 from rl_lab.robot import kinematics as kin
+
+# The canonical URDF-path helper lives in the engine-agnostic robot module;
+# re-exported here under its long-standing name for callers of this module.
+from rl_lab.robot.buddy_jr import urdf_path as default_urdf_path
 from rl_lab.viz import schemas
 
 WORLD_FRAME = "world"
 ROOT_LINK = "base_link"
-
-
-def default_urdf_path() -> Path:
-    """Locate ``urdf/buddy_jr.urdf`` relative to the installed package."""
-    return Path(__file__).resolve().parents[2] / "urdf" / "buddy_jr.urdf"
 
 
 @dataclass(frozen=True)

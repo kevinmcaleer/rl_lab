@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import degrees, pi
+from pathlib import Path
 
 import numpy as np
 
@@ -65,6 +66,17 @@ JOINT_LIMITS: np.ndarray = np.array([[j.lower, j.upper] for j in JOINTS], dtype=
 
 # Name of the URDF link we treat as the end-effector / camera tip.
 END_EFFECTOR_LINK: str = "camera_link"
+
+
+def urdf_path() -> Path:
+    """Absolute path to the packaged Buddy Jr URDF (``urdf/buddy_jr.urdf``).
+
+    Lives here, in the engine-agnostic robot module, so both the physics
+    backends and the visualization can find the model without either importing
+    the other.
+    """
+    return Path(__file__).resolve().parents[2] / "urdf" / "buddy_jr.urdf"
+
 
 # --------------------------------------------------------------------------- #
 # sim2real servo mapping.
