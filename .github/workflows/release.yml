@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # Fetch the full history so setuptools-scm / git describe works if
           # the project ever adopts dynamic versioning.  Harmless otherwise.
